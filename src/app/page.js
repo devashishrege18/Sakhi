@@ -36,7 +36,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(true);
+  const [showSidebar, setShowSidebar] = useState(typeof window !== 'undefined' ? window.innerWidth > 768 : false);
   const [showLanguages, setShowLanguages] = useState(false);
   const [selectedLang, setSelectedLang] = useState(INDIAN_LANGUAGES[0]);
   const [femaleVoice, setFemaleVoice] = useState(null);
@@ -691,8 +691,151 @@ export default function Home() {
         }
         /* === END DELETE BUTTON FIX === */
         
+        /* === MOBILE RESPONSIVENESS === */
+        @media (max-width: 768px) {
+          /* Hide sidebar by default on mobile */
+          .sidebar {
+            position: fixed !important;
+            left: -280px !important;
+            top: 0 !important;
+            height: 100vh !important;
+            z-index: 1000 !important;
+            transition: left 0.3s ease !important;
+            width: 260px !important;
+          }
+          .sidebar.open {
+            left: 0 !important;
+          }
+          
+          /* Main area takes full width */
+          .main {
+            width: 100% !important;
+            margin-left: 0 !important;
+          }
+          
+          /* Consistent background color */
+          .main, .app {
+            background: linear-gradient(135deg, #D8A9D8 0%, #c792c7 50%, #D8A9D8 100%) !important;
+          }
+          
+          /* Header mobile adjustments */
+          .header {
+            padding: 10px 12px !important;
+          }
+          .header-left {
+            gap: 8px !important;
+          }
+          .toggle-btn {
+            padding: 8px !important;
+          }
+          .logo-img {
+            height: 32px !important;
+          }
+          .logo-text {
+            font-size: 20px !important;
+          }
+          .lang-btn {
+            padding: 8px 12px !important;
+            font-size: 12px !important;
+          }
+          .lang-menu {
+            min-width: 180px !important;
+            max-height: 250px !important;
+          }
+          
+          /* Welcome section mobile */
+          .welcome {
+            padding-top: 20px !important;
+            padding-left: 16px !important;
+            padding-right: 16px !important;
+          }
+          .welcome-logo {
+            height: 80px !important;
+            margin-bottom: 16px !important;
+          }
+          .welcome h1 {
+            font-size: 22px !important;
+          }
+          .welcome-sub {
+            font-size: 14px !important;
+            margin-bottom: 24px !important;
+          }
+          
+          /* Suggestions grid - single column on mobile */
+          .suggestions {
+            grid-template-columns: 1fr !important;
+            gap: 10px !important;
+            max-width: 100% !important;
+          }
+          .suggestion-card {
+            padding: 14px !important;
+          }
+          .suggestion-text {
+            font-size: 13px !important;
+          }
+          
+          /* Chat container */
+          .chat-container {
+            padding: 12px !important;
+          }
+          .messages {
+            max-width: 100% !important;
+          }
+          .message-row {
+            padding: 8px 0 !important;
+          }
+          .message-content {
+            max-width: 90% !important;
+          }
+          .message-text {
+            font-size: 14px !important;
+          }
+          
+          /* Input area mobile */
+          .input-wrapper {
+            padding: 12px 12px 20px !important;
+          }
+          .input-container {
+            padding: 10px 14px !important;
+            border-radius: 16px !important;
+          }
+          .chat-input {
+            font-size: 14px !important;
+          }
+          .action-btn {
+            width: 38px !important;
+            height: 38px !important;
+          }
+          .input-footer {
+            font-size: 10px !important;
+            margin-top: 10px !important;
+          }
+          
+          /* Waveform mobile */
+          .waveform {
+            padding: 16px !important;
+          }
+          .wave-bar {
+            width: 8px !important;
+          }
+        }
         
-        
+        /* Small mobile (< 480px) */
+        @media (max-width: 480px) {
+          .welcome h1 {
+            font-size: 18px !important;
+          }
+          .welcome-logo {
+            height: 60px !important;
+          }
+          .suggestion-text {
+            font-size: 12px !important;
+          }
+          .logo-text {
+            font-size: 18px !important;
+          }
+        }
+        /* === END MOBILE RESPONSIVENESS === */
         
         `}</style>
     </div>
