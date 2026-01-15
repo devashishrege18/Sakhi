@@ -337,7 +337,14 @@ export default function Home() {
   // ... (useEffects) ...
 
   // Restore Speech Recognition Logic
-  useEffect(() => { initSpeechRecognition(selectedLang.code); }, [selectedLang]);
+  // CRITICAL: We use 'en-IN' for the FIRST command even if UI is Hindi.
+  // This ensures we capture phonetic input for ANY language (Universal Listener).
+  // After first command, strict language is enforced.
+  useEffect(() => {
+    const isFirstCommand = messages.length === 0 && chatHistory.length === 0;
+    const universalLang = 'en-IN';
+    initSpeechRecognition(isFirstCommand ? universalLang : selectedLang.code);
+  }, [selectedLang, messages, chatHistory]);
 
   const initSpeechRecognition = (langCode) => {
     if (typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
