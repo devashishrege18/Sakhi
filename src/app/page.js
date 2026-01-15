@@ -450,11 +450,28 @@ export default function Home() {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
-      // Consistent voice settings for both typed and spoken
-      if (femaleVoice) u.voice = femaleVoice;
-      u.lang = selectedLang.code;
-      u.pitch = 1.0;  // Natural pitch
-      u.rate = 0.95;  // Slightly slower for clarity
+
+      // Dynamic voice selection based on current language
+      const voices = window.speechSynthesis.getVoices();
+      const langCode = selectedLang.code;
+
+      // Try to find a voice that matches the language exactly
+      let voice = voices.find(v => v.lang === langCode && (v.name.includes('Female') || v.name.includes('Google') || v.name.includes('Microsoft')));
+
+      // Fallback 1: Any voice with the language code
+      if (!voice) voice = voices.find(v => v.lang.startsWith(langCode.split('-')[0]));
+
+      // Fallback 2: The default Heera/Hindi voice if active lang is Hindi
+      if (!voice && langCode === 'hi-IN') voice = femaleVoice;
+
+      // Fallback 3: English Indian (Zira/Google) if no specific lang voice found, effectively reading it in Indian accent
+      if (!voice) voice = voices.find(v => v.name.includes('Zira') || v.lang === 'en-IN');
+
+      if (voice) u.voice = voice;
+
+      u.lang = langCode;
+      u.pitch = 1.0;
+      u.rate = 0.95;
       u.onstart = () => setIsSpeaking(true);
       u.onend = () => {
         setIsSpeaking(false);
