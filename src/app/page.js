@@ -22,12 +22,28 @@ const INDIAN_LANGUAGES = [
 ];
 
 const VOICE_FEATURES = {
-  hospitals: { keywords: ['hospital', 'असपतल', 'மரததவமன', 'ఆసపతర', 'হসপতল', 'clinic', 'emergency'], route: '/hospitals' },
-  doctors: { keywords: ['doctor', 'डकटर', 'மரததவர', 'డకటర', 'ডকতর', 'consultation'], route: '/doctors' },
-  wellness: { keywords: ['wellness', 'diet', 'exercise', 'सवसथय', 'ஆரககயம', 'fitness'], route: '/wellness' },
-  pharmacy: { keywords: ['pharmacy', 'medicine', 'दवई', 'மரநத', 'pads'], route: '/pharmacy' },
-  forum: { keywords: ['forum', 'community', 'समदय', 'discussion'], route: '/forum' },
+  hospitals: {
+    keywords: ['hospital', 'clinic', 'emergency', 'ambulance', 'nearby', 'aspatal', 'अस्पताल', 'dard', 'pain', 'accident', 'blood', 'urgent', 'खून', 'emergency room', '108'],
+    route: '/hospitals'
+  },
+  doctors: {
+    keywords: ['doctor', 'consultation', 'consult', 'specialist', 'gynecologist', 'डॉक्टर', 'baat karni', 'checkup', 'appointment', 'video call', 'talk to', 'milna hai', 'dikhana hai'],
+    route: '/doctors'
+  },
+  wellness: {
+    keywords: ['wellness', 'diet', 'exercise', 'yoga', 'fitness', 'healthy', 'weight', 'खाना', 'food', 'nutrition', 'workout', 'stretch', 'meditation', 'stress relief', 'lifestyle'],
+    route: '/wellness'
+  },
+  pharmacy: {
+    keywords: ['pharmacy', 'medicine', 'dawai', 'दवाई', 'tablet', 'pads', 'pad', 'sanitary', 'iron', 'calcium', 'vitamins', 'supplements', 'buy', 'kharidna', 'order', 'menstrual cup'],
+    route: '/pharmacy'
+  },
+  forum: {
+    keywords: ['forum', 'community', 'discuss', 'share', 'समुदाय', 'other women', 'auraton se', 'post', 'question', 'ask', 'batao', 'experience', 'stories'],
+    route: '/forum'
+  },
 };
+
 
 export default function Home() {
   const router = useRouter();
@@ -93,8 +109,19 @@ export default function Home() {
   useEffect(() => {
     const loadVoices = () => {
       const voices = window.speechSynthesis?.getVoices() || [];
-      const female = voices.find(v => v.name.includes('Zira') || v.name.includes('Heera') || v.name.toLowerCase().includes('female'));
-      setFemaleVoice(female || voices.find(v => v.lang.includes('hi')) || voices[0]);
+      // Priority order for Hindi Indian accent:
+      // 1. Microsoft Heera (Hindi female)
+      // 2. Google हिन्दी (Hindi)
+      // 3. Any Hindi voice
+      // 4. Microsoft Zira (English-Indian accent)
+      // 5. Any female voice
+      const hindiVoice = voices.find(v => v.name.includes('Heera') || v.name.includes('Hemant')) ||
+        voices.find(v => v.name.includes('Hindi') || v.lang === 'hi-IN') ||
+        voices.find(v => v.lang.startsWith('hi')) ||
+        voices.find(v => v.name.includes('Zira')) ||
+        voices.find(v => v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('woman')) ||
+        voices[0];
+      setFemaleVoice(hindiVoice);
     };
     if (typeof window !== 'undefined') { loadVoices(); window.speechSynthesis?.addEventListener('voiceschanged', loadVoices); }
   }, []);
