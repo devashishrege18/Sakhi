@@ -171,6 +171,19 @@ const UI_TRANSLATIONS = {
   }
 };
 
+const REDIRECT_TRANSLATIONS = {
+  'hi-IN': { hospitals: 'पास के अस्पताल दिखा रही हूँ...', doctors: 'डॉक्टर से जोड़ रही हूँ...', wellness: 'सेहत के नुस्खे ला रही हूँ...', pharmacy: 'दवाई की दुकान खोल रही हूँ...', forum: 'चर्चा मंच पर ले जा रही हूँ...' },
+  'bn-IN': { hospitals: 'কাছের হাসপাতাল দেখাচ্ছি...', doctors: 'ডাক্তারের সাথে যোগাযোগ করাচ্ছি...', wellness: 'স্বাস্থ্য টিপস আনছি...', pharmacy: 'ফার্মেসি খুলছি...', forum: 'ফোরামে নিয়ে যাচ্ছি...' },
+  'te-IN': { hospitals: 'దగ్గరి ఆసుపత్రులు చూపిస్తున్నాను...', doctors: 'డాక్టర్‌తో కలుపుతున్నాను...', wellness: 'ఆరోగ్య చిట్కాలు తెస్తున్నాను...', pharmacy: 'ఫార్మసీ తెరుస్తున్నాను...', forum: 'చర్చ వేదికకు తీసుకెళ్తున్నాను...' },
+  'mr-IN': { hospitals: 'जवळचे रुग्णालय दाखवत आहे...', doctors: 'डॉक्तरांशी जोडत आहे...', wellness: 'आरोग्य टिप्स आणत आहे...', pharmacy: 'औषधाचे दुकान उघडत आहे...', forum: 'चर्चा मंचावर नेत आहे...' },
+  'ta-IN': { hospitals: 'அருகிலுள்ள மருத்துவமனைகளைக் காட்டுகிறேன்...', doctors: 'மருத்துவரை இணைக்கிறேன்...', wellness: 'ஆரோக்கிய குறிப்புகளைத் திறக்கிறேன்...', pharmacy: 'மருந்தகத்தைத் திறக்கிறேன்...', forum: 'மன்றத்திற்கு அழைத்துச் செல்கிறேன்...' },
+  'gu-IN': { hospitals: 'નજીકની હોસ્પિટલ બતાવી રહી છું...', doctors: 'ડોક્ટર સાથે જોડી રહી છું...', wellness: 'સ્વાસ્થ્ય ટિપ્સ લાવી રહી છું...', pharmacy: 'ફાર્મસી ખોલી રહી છું...', forum: 'ચર્ચા મંચ પર લઈ જઈ રહી છું...' },
+  'kn-IN': { hospitals: 'ಹತ್ತಿರದ ಆಸ್ಪತ್ರೆಗಳನ್ನು ತೋರಿಸುತ್ತಿದ್ದೇನೆ...', doctors: 'ವೈದ್ಯರನ್ನು ಸಂಪರ್ಕಿಸುತ್ತಿದ್ದೇನೆ...', wellness: 'ಆರೋಗ್ಯ ಸಲಹೆಗಳನ್ನು ತರುತ್ತಿದ್ದೇನೆ...', pharmacy: 'ಔಷಧಾಲಯವನ್ನು ತೆರೆಯುತ್ತಿದ್ದೇನೆ...', forum: 'ವೇದಿಕೆಗೆ ಕರೆದೊಯ್ಯುತ್ತಿದ್ದೇನೆ...' },
+  'ml-IN': { hospitals: 'അടുത്തുള്ള ആശുപത്രികൾ കാണിക്കുന്നു...', doctors: 'ഡോക്ടറുമായി ബന്ധിപ്പിക്കുന്നു...', wellness: 'ആരോഗ്യ നിർദ്ദേശങ്ങൾ കൊണ്ടുവരുന്നു...', pharmacy: 'ഫാർമസി തുറക്കുന്നു...', forum: 'ഫോറത്തിലേക്ക് കൊണ്ടുപോകുന്നു...' },
+  'pa-IN': { hospitals: 'ਨੇੜਲੇ ਹਸਪਤਾਲ ਦਿਖਾ ਰਹੀ ਹਾਂ...', doctors: 'ਡਾਕਟਰ ਨਾਲ ਜੋੜ ਰਹੀ ਹਾਂ...', wellness: 'ਸਿਹਤ ਨੁਸਖੇ ਲਿਆ ਰਹੀ ਹਾਂ...', pharmacy: 'ਦਵਾਈ ਦੀ ਦੁਕਾਨ ਖੋਲ੍ਹ ਰਹੀ ਹਾਂ...', forum: 'ਚਰਚਾ ਮੰਚ ਤੇ ਲੈ ਜਾ ਰਹੀ ਹਾਂ...' },
+  'en-IN': { hospitals: 'Showing nearby hospitals...', doctors: 'Connecting you to a doctor...', wellness: 'Opening wellness tips...', pharmacy: 'Opening pharmacy...', forum: 'Taking you to the forum...' }
+};
+
 
 const VOICE_FEATURES = {
   hospitals: {
@@ -467,7 +480,6 @@ export default function Home() {
     // Convert generic language text to simply text for TTS
     // (ElevenLabs Multilingual v2 auto-detects language from script)
 
-    setIsSpeaking(true);
     setError(null);
 
     try {
@@ -498,6 +510,8 @@ export default function Home() {
         }
       };
 
+      // Only show speaking visual when audio is actually ready to play
+      setIsSpeaking(true);
       await audio.play();
     } catch (e) {
       console.error('ElevenLabs TTS error:', e);
@@ -511,9 +525,12 @@ export default function Home() {
     const lower = text.toLowerCase();
     for (const [k, f] of Object.entries(VOICE_FEATURES)) {
       if (f.keywords.some(kw => lower.includes(kw.toLowerCase()))) {
-        const r = { hospitals: 'Nearby hospitals dikha rahi hoon...', doctors: 'Doctor se connect kar rahi hoon...', wellness: 'Wellness tips la rahi hoon...', pharmacy: 'Pharmacy khol rahi hoon...', forum: 'Community forum le ja rahi hoon...' };
-        setMessages(prev => [...prev, { role: 'user', content: text }, { role: 'assistant', content: r[k], navigating: true }]);
-        speakResponse(r[k], f.route);
+        // Use native script translation for redirects
+        const redirects = REDIRECT_TRANSLATIONS[selectedLang.code] || REDIRECT_TRANSLATIONS['en-IN'];
+        const responseText = redirects[k] || 'Redirecting...';
+
+        setMessages(prev => [...prev, { role: 'user', content: text }, { role: 'assistant', content: responseText, navigating: true }]);
+        speakResponse(responseText, f.route);
         return;
       }
     }
