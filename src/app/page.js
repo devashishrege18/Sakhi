@@ -457,16 +457,18 @@ export default function Home() {
       const langCode = selectedLang.code;
 
       // Try to find a voice that matches the language exactly
-      let voice = voices.find(v => v.lang === langCode && (v.name.includes('Female') || v.name.includes('Google') || v.name.includes('Microsoft')));
+      // Priority: Google names (often better quality), then Microsoft, then any
+      let voice = voices.find(v => v.lang === langCode && (v.name.includes('Google') || v.name.includes('Microsoft')));
 
-      // Fallback 1: Any voice with the language code
+      // Fallback 1: Any voice with the exact language code
+      if (!voice) voice = voices.find(v => v.lang === langCode);
+
+      // Fallback 2: Any voice starting with the language code (e.g. 'hi' for 'hi-IN')
       if (!voice) voice = voices.find(v => v.lang.startsWith(langCode.split('-')[0]));
 
-      // Fallback 2: The default Heera/Hindi voice if active lang is Hindi
-      if (!voice && langCode === 'hi-IN') voice = femaleVoice;
-
-      // Fallback 3: English Indian (Zira/Google) if no specific lang voice found, effectively reading it in Indian accent
-      if (!voice) voice = voices.find(v => v.name.includes('Zira') || v.lang === 'en-IN');
+      // CRITICAL FIX: Do NOT force an English/Hindi voice for other languages (e.g. Tamil/Bengali).
+      // English voices cannot read Tamil script and will result in silence.
+      // If no voice is found, we leave u.voice undefined and let the browser/OS use its default for u.lang.
 
       if (voice) u.voice = voice;
 
