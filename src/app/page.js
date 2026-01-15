@@ -312,6 +312,7 @@ export default function Home() {
   const [showSidebar, setShowSidebar] = useState(true); // Default true, will be adjusted on mount
   const [showLanguages, setShowLanguages] = useState(false);
   const [selectedLang, setSelectedLang] = useState(INDIAN_LANGUAGES[0]);
+  const [femaleVoice, setFemaleVoice] = useState(null);
   const [error, setError] = useState(null); // Debugging TTS
   const [chatHistory, setChatHistory] = useState([]);
   const [currentChatId, setCurrentChatId] = useState(null);
