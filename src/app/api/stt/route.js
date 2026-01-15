@@ -19,6 +19,8 @@ export async function POST(req) {
         groqFormData.append('file', file);
         groqFormData.append('model', 'whisper-large-v3'); // Multilingual model
         groqFormData.append('response_format', 'verbose_json'); // To get language detection
+        // Prime the model to expect Indian languages and health context to prevent hallucinations (e.g. Arabic)
+        groqFormData.append('prompt', 'Hindi Marathi Tamil Telugu Bengali Gujarati Kannada Malayalam Punjabi English. Medical health context. Sakhi assistant.');
 
         const response = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
             method: 'POST',
