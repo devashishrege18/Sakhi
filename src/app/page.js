@@ -318,6 +318,7 @@ export default function Home() {
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
   const shouldListenRef = useRef(false);
+  const audioRef = useRef(null); // Ref for ElevenLabs audio
 
   // Load chat history on mount
   useEffect(() => {
@@ -388,8 +389,10 @@ export default function Home() {
   // Stop speech when tab loses focus or route changes
   useEffect(() => {
     const handleVisibility = () => {
-      if (document.hidden && 'speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
+      if (document.hidden) {
+        if (audioRef.current) {
+          audioRef.current.pause();
+        }
         setIsSpeaking(false);
       }
     };
@@ -421,6 +424,12 @@ export default function Home() {
   };
 
   const toggleListening = () => {
+    // Stop speaking if mic is toggled
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setIsSpeaking(false);
+    }
+
     if (isListening) {
       // Stop listening
       recognitionRef.current?.stop();
@@ -447,36 +456,33 @@ export default function Home() {
     }
   };
 
-  const speakResponse = (text, nav) => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
+  const speakResponse = async (text, nav) => {
+    // Stop any existing audio
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
 
-      // Dynamic voice selection based on current language
-      const voices = window.speechSynthesis.getVoices();
-      const langCode = selectedLang.code;
+    // Convert generic language text to simply text for TTS
+    // (ElevenLabs Multilingual v2 auto-detects language from script)
 
-      // Try to find a voice that matches the language exactly
-      // Priority: Google names (often better quality), then Microsoft, then any
-      let voice = voices.find(v => v.lang === langCode && (v.name.includes('Google') || v.name.includes('Microsoft')));
+    setIsSpeaking(true);
 
-      // Fallback 1: Any voice with the exact language code
-      if (!voice) voice = voices.find(v => v.lang === langCode);
+    try {
+      const res = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
 
-      // Fallback 2: Any voice starting with the language code (e.g. 'hi' for 'hi-IN')
-      if (!voice) voice = voices.find(v => v.lang.startsWith(langCode.split('-')[0]));
+      if (!res.ok) throw new Error('TTS failed');
 
-      // CRITICAL FIX: Do NOT force an English/Hindi voice for other languages (e.g. Tamil/Bengali).
-      // English voices cannot read Tamil script and will result in silence.
-      // If no voice is found, we leave u.voice undefined and let the browser/OS use its default for u.lang.
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      audioRef.current = audio;
 
-      if (voice) u.voice = voice;
-
-      u.lang = langCode;
-      u.pitch = 1.0;
-      u.rate = 0.95;
-      u.onstart = () => setIsSpeaking(true);
-      u.onend = () => {
+      audio.onended = () => {
         setIsSpeaking(false);
         // Execute redirect AFTER speech ends
         if (nav) {
@@ -485,10 +491,11 @@ export default function Home() {
           }, 500);
         }
       };
-      window.speechSynthesis.speak(u);
-    } else if (nav) {
-      // Fallback: redirect immediately if no speech synthesis
-      setTimeout(() => { window.location.href = nav; }, 1000);
+
+      await audio.play();
+    } catch (e) {
+      console.error('ElevenLabs TTS error:', e);
+      setIsSpeaking(false);
     }
   };
 
