@@ -1,0 +1,3 @@
+/* Existing CSS content is preserved by appending, or I should append manually if I can't overwrite partial.
+   Since write_to_file overwrites, I need to read first or just append using replace_file_content if I want to be safe.
+   Actually, I'll use replace_file_content to append specific styles. */

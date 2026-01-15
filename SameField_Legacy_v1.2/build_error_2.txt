@@ -1,0 +1,31 @@
+
+> samefield_sports@0.0.0 build
+> vite build
+
+[36mvite v7.3.0 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32m✓[39m 20 modules transformed.
+[31m✗[39m Build failed in 377ms
+[31merror during build:
+[31m[vite:esbuild] Transform failed with 1 error:
+C:/Users/hp/.gemini/antigravity/scratch/samefield_sports/src/context/VoiceContext.jsx:10:0: ERROR: Expected identifier but found "<<"[31m
+file: [36mC:/Users/hp/.gemini/antigravity/scratch/samefield_sports/src/context/VoiceContext.jsx:10:0[31m
+[33m
+[33mExpected identifier but found "<<"[33m
+8  |  export const VoiceProvider = ({ children }) => {
+9  |      const [voiceState, setVoiceState] = useState({
+10 |  <<<<<<< HEAD
+   |  ^
+11 |          rooms: [],
+12 |          currentRoom: null,
+[31m
+    at failureErrorWithLog (C:\Users\hp\.gemini\antigravity\scratch\samefield_sports\node_modules\esbuild\lib\main.js:1467:15)
+    at C:\Users\hp\.gemini\antigravity\scratch\samefield_sports\node_modules\esbuild\lib\main.js:736:50
+    at responseCallbacks.<computed> (C:\Users\hp\.gemini\antigravity\scratch\samefield_sports\node_modules\esbuild\lib\main.js:603:9)
+    at handleIncomingPacket (C:\Users\hp\.gemini\antigravity\scratch\samefield_sports\node_modules\esbuild\lib\main.js:658:12)
+    at Socket.readFromStdout (C:\Users\hp\.gemini\antigravity\scratch\samefield_sports\node_modules\esbuild\lib\main.js:581:7)
+    at Socket.emit (node:events:519:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)[39m

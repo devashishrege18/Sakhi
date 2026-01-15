@@ -1,0 +1,159 @@
+.matches-container {
+    padding: var(--spacing-xl) var(--spacing-lg) 0 var(--content-padding-left);
+}
+
+.section-title {
+    color: var(--color-gold-muted);
+    font-size: 2rem;
+    margin-bottom: var(--spacing-lg);
+    border-left: 4px solid var(--color-gold-primary);
+    padding-left: var(--spacing-md);
+}
+
+.matches-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.match-card {
+    background: var(--color-black-surface);
+    border: 1px solid var(--border-color-dim);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-md);
+    transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+.match-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--color-gold-muted);
+}
+
+.match-status {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-md);
+}
+
+.status-badge {
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: var(--border-radius-sm);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.status-badge.live {
+    color: #ff4444;
+    background: rgba(255, 68, 68, 0.1);
+}
+
+.status-badge.finished {
+    color: var(--color-text-secondary);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.blink-dot {
+    width: 6px;
+    height: 6px;
+    background: currentColor;
+    border-radius: 50%;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+}
+
+.teams-score {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+}
+
+.team {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+    flex: 1;
+}
+
+.team-logo {
+    width: 40px;
+    height: 40px;
+    background: var(--color-black-elevated);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    color: var(--color-gold-text);
+    border: 1px solid var(--color-gold-muted);
+}
+
+.team-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.score {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--color-text-primary);
+}
+
+.divider {
+    font-size: 1.5rem;
+    color: var(--color-text-secondary);
+    padding: 0 var(--spacing-sm);
+}
+
+.live-stats {
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.stat-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+}
+
+.progress-bg {
+    flex: 1;
+    height: 4px;
+    background: var(--color-black-elevated);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--color-gold-primary);
+}
+
+.btn-detail {
+    width: 100%;
+    margin-top: var(--spacing-md);
+    padding: 8px;
+    background: rgba(255, 215, 0, 0.05);
+    color: var(--color-gold-muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: var(--border-radius-sm);
+    transition: background var(--transition-fast);
+}
+
+.btn-detail:hover {
+    background: rgba(255, 215, 0, 0.15);
+}

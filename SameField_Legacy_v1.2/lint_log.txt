@@ -1,0 +1,255 @@
+﻿
+> samefield_sports@0.0.0 lint
+> eslint .
+
+
+C:\Users\hp\.gemini\antigravity\scratch\samefield_sports\server\index.js
+    1:17  error  'require' is not defined         no-undef
+    2:14  error  'require' is not defined         no-undef
+    3:20  error  'require' is not defined         no-undef
+    4:14  error  'require' is not defined         no-undef
+    5:18  error  'require' is not defined         no-undef
+    7:1   error  'process' is not defined         no-undef
+   89:14  error  'err' is defined but never used  no-unused-vars
+  115:14  error  'err' is defined but never used  no-unused-vars
+  141:14  error  'err' is defined but never used  no-unused-vars
+  172:14  error  'err' is defined but never used  no-unused-vars
+
+C:\Users\hp\.gemini\antigravity\scratch\samefield_sports\src\components\Forum.jsx
+  16:9   error    Error: Cannot access variable before it is declared
+
+`loadThreads` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  14 |     useEffect(() => {
+  15 |         // Initial Load
+> 16 |         loadThreads();
+     |         ^^^^^^^^^^^ `loadThreads` accessed before it is declared
+  17 |
+  18 |         // Simulate Real-time Updates
+  19 |         const interval = setInterval(() => {
+
+  30 |     }, [filter]);
+  31 |
+> 32 |     const loadThreads = () => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 33 |         setLoading(true);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 34 |         // Simulate network delay
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 35 |         setTimeout(() => {
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |             setThreads(forumService.getThreads(filter));
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 37 |             setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 38 |         }, 500);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 39 |     };
+     | ^^^^^^^ `loadThreads` is declared here
+  40 |
+  41 |     const handleCreateMockThread = () => {
+  42 |         // Simulate user creating a thread  react-hooks/immutability
+  25:44  error    'id' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             no-unused-vars
+  30:8   warning  React Hook useEffect has a missing dependency: 'loadThreads'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             react-hooks/exhaustive-deps
+
+C:\Users\hp\.gemini\antigravity\scratch\samefield_sports\src\components\KID.jsx
+  1:17  error  'useState' is defined but never used. Allowed unused vars must match /^[A-Z_]/u   no-unused-vars
+  1:27  error  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\hp\.gemini\antigravity\scratch\samefield_sports\src\components\LiveMatches.jsx
+  1:17  error  'useState' is defined but never used. Allowed unused vars must match /^[A-Z_]/u   no-unused-vars
+  1:27  error  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\hp\.gemini\antigravity\scratch\samefield_sports\src\components\PurposeModal.jsx
+  10:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+   8 |         const hasSeenPurpose = localStorage.getItem('samefield_purpose_seen');
+   9 |         if (!hasSeenPurpose) {
+> 10 |             setIsVisible(true);
+     |             ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  11 |         }
+  12 |     }, []);
+  13 |  react-hooks/set-state-in-effect
+
+C:\Users\hp\.gemini\antigravity\scratch\samefield_sports\src\components\UsernameModal.jsx
+  12:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  10 |         const storedName = localStorage.getItem('samefield_username');
+  11 |         if (!storedName) {
+> 12 |             setIsOpen(true);
+     |             ^^^^^^^^^ Avoid calling setState() directly within an effect
+  13 |         }
+  14 |     }, []);
+  15 |  react-hooks/set-state-in-effect
+
+C:\Users\hp\.gemini\antigravity\scratch\samefield_sports\src\components\VoiceRoom\RoomList.jsx
+  51:75  error  'peerId' is defined but never used  no-unused-vars
+
+C:\Users\hp\.gemini\antigravity\scratch\samefield_sports\src\context\PointsContext.jsx
+   7:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  12:20  error  'setUserId' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                       no-unused-vars
+
+C:\Users\hp\.gemini\antigravity\scratch\samefield_sports\src\context\VoiceContext.jsx
+  6:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\hp\.gemini\antigravity\scratch\samefield_sports\src\layouts\DashboardLayout.jsx
+  13:36  error    'userId' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                            no-unused-vars
+  41:8   warning  React Hook useEffect has a missing dependency: 'displayPoints'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\hp\.gemini\antigravity\scratch\samefield_sports\src\pages\Fandom.jsx
+   14:10  error  'predictionQuestions' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        no-unused-vars
+   14:42  error  'mockCircles' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                no-unused-vars
+   23:21  error  'setCircles' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        no-unused-vars
+   41:12  error  'room' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              no-unused-vars
+   42:12  error  'isConnected' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       no-unused-vars
+   43:12  error  'onlineUsers' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       no-unused-vars
+   47:12  error  'floatingHearts' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    no-unused-vars
+   65:9   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  63 |
+  64 |         const identity = { guestUid: storedId, guest_name: storedName };
+> 65 |         setGuestIdentity(identity);
+     |         ^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  66 |
+  67 |         if (id) {
+  68 |             const RELAYS = ['wss://relay.damus.io', 'wss://nos.lol', 'wss://relay.snort.social'];  react-hooks/set-state-in-effect
+  706:63  error  'ix' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    no-unused-vars
+
+C:\Users\hp\.gemini\antigravity\scratch\samefield_sports\src\pages\Forum.jsx
+  116:9    error    Error: Cannot access variable before it is declared
+
+`loadThreads` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  114 |
+  115 |     useEffect(() => {
+> 116 |         loadThreads();
+      |         ^^^^^^^^^^^ `loadThreads` accessed before it is declared
+  117 |     }, [filter]);
+  118 |
+  119 |     useEffect(() => {
+
+  130 |     }, [filter]);
+  131 |
+> 132 |     const loadThreads = () => {
+      |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 133 |         setLoading(true);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 134 |         setTimeout(() => {
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 135 |             setThreads(forumService.getThreads(filter));
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 136 |             setLoading(false);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 137 |         }, 500);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 138 |     };
+      | ^^^^^^^ `loadThreads` is declared here
+  139 |
+  140 |     const handleCreateMockThread = async () => {
+  141 |         const savedName = localStorage.getItem('samefield_username') || 'Member';  react-hooks/immutability
+  117:8    warning  React Hook useEffect has a missing dependency: 'loadThreads'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+  339:126  error    'i' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        no-unused-vars
+
+C:\Users\hp\.gemini\antigravity\scratch\samefield_sports\src\pages\Home.jsx
+  31:8   warning  React Hook useEffect has a missing dependency: 'displayPoints'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  33:31  error    'player' is defined but never used                                                                                no-unused-vars
+  40:11  error    'handlePoll' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                        no-unused-vars
+
+C:\Users\hp\.gemini\antigravity\scratch\samefield_sports\src\pages\Watch.jsx
+  45:17  error  Error: Cannot access variable before it is declared
+
+`scrollToBottom` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  43 |             if (type === 'messages') {
+  44 |                 setMessages(payload || []);
+> 45 |                 scrollToBottom();
+     |                 ^^^^^^^^^^^^^^ `scrollToBottom` accessed before it is declared
+  46 |             }
+  47 |             if (type === 'reaction') {
+  48 |                 triggerReaction(payload);
+
+  52 |     }, []);
+  53 |
+> 54 |     const scrollToBottom = () => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 55 |         setTimeout(() => {
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 56 |             messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 57 |         }, 100);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 58 |     };
+     | ^^^^^^^ `scrollToBottom` is declared here
+  59 |
+  60 |     const triggerReaction = (type) => {
+  61 |         const id = Date.now() + Math.random();                                                                                                                                                                                                                                                                                                                                                        react-hooks/immutability
+  48:17  error  Error: Cannot access variable before it is declared
+
+`triggerReaction` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  46 |             }
+  47 |             if (type === 'reaction') {
+> 48 |                 triggerReaction(payload);
+     |                 ^^^^^^^^^^^^^^^ `triggerReaction` accessed before it is declared
+  49 |             }
+  50 |         });
+  51 |         return unsubscribe;
+
+  58 |     };
+  59 |
+> 60 |     const triggerReaction = (type) => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 61 |         const id = Date.now() + Math.random();
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 62 |         const startX = Math.random() * 80 + 10;
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 63 |         setReactions(prev => [...prev, { id, type, x: startX }]);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         setTimeout(() => {
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 65 |             setReactions(prev => prev.filter(r => r.id !== id));
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 66 |         }, 2000);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 67 |     };
+     | ^^^^^^^ `triggerReaction` is declared here
+  68 |
+  69 |     const handleSendReaction = (type) => {
+  70 |         streamChatService.sendReaction(type);  react-hooks/immutability
+
+C:\Users\hp\.gemini\antigravity\scratch\samefield_sports\src\services\ForumService.js
+   13:5   error  'where' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  219:26  error  'callback' is defined but never used                                          no-unused-vars
+
+C:\Users\hp\.gemini\antigravity\scratch\samefield_sports\src\services\StreamChatService.js
+  13:5  error  'where' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\hp\.gemini\antigravity\scratch\samefield_sports\src\services\VoiceService.js
+  155:46  error  'peerId' is defined but never used  no-unused-vars
+
+C:\Users\hp\.gemini\antigravity\scratch\samefield_sports\temp_discover_full.jsx
+  1:1  error  Parsing error: Unexpected character '∩┐╜'
+
+C:\Users\hp\.gemini\antigravity\scratch\samefield_sports\temp_support_route.js
+  1:1  error  Parsing error: Unexpected character '∩┐╜'
+
+Γ£û 48 problems (44 errors, 4 warnings)
+

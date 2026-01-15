@@ -1,0 +1,231 @@
+.kid-container {
+    padding: var(--spacing-xl) var(--spacing-lg) 0 var(--content-padding-left);
+}
+
+.kid-dashboard {
+    display: flex;
+    gap: var(--spacing-xl);
+    flex-wrap: wrap;
+}
+
+.kid-card {
+    width: 350px;
+    background: linear-gradient(135deg, #1a1a1a 0%, #000 100%);
+    border: 1px solid var(--color-gold-muted);
+    border-radius: 20px;
+    padding: var(--spacing-lg);
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+@media (max-width: 400px) {
+    .kid-card {
+        width: 100%;
+    }
+}
+
+.card-top {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-md);
+}
+
+.card-chip {
+    width: 50px;
+    height: 35px;
+    background: linear-gradient(45deg, #bf953f, #fcf6ba, #bf953f);
+    border-radius: 6px;
+    opacity: 0.8;
+}
+
+.card-logo {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    color: var(--color-gold-primary);
+    font-size: 1.5rem;
+}
+
+.player-image-box {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid var(--color-gold-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--spacing-md);
+    background: #222;
+}
+
+.player-avatar-large {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.player-info {
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.player-info h3 {
+    color: #fff;
+    font-size: 1.4rem;
+    margin-bottom: 4px;
+}
+
+.kid-id {
+    color: var(--color-gold-muted);
+    font-family: monospace;
+    letter-spacing: 2px;
+}
+
+.player-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+    width: 100%;
+    margin-bottom: var(--spacing-lg);
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+
+.stat-label {
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    color: var(--color-text-secondary);
+    font-weight: 600;
+}
+
+.stat-val {
+    color: var(--color-gold-primary);
+    font-weight: 700;
+}
+
+.total-points {
+    width: 100%;
+    background: var(--color-gold-primary);
+    padding: var(--spacing-md);
+    border-radius: 12px;
+    color: #000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.points-val {
+    font-size: 1.4rem;
+}
+
+/* Analytics Section */
+.kid-analytics {
+    flex: 1;
+    min-width: 300px;
+}
+
+.analytics-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.leaderboard-table {
+    background: var(--color-black-surface);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-md);
+    overflow-x: auto;
+}
+
+.table-header,
+.table-row {
+    display: grid;
+    grid-template-columns: 60px 2fr 100px 60px;
+    padding: var(--spacing-md);
+    align-items: center;
+    min-width: 400px;
+}
+
+.table-header {
+    color: var(--color-text-secondary);
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.table-row {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background var(--transition-fast);
+}
+
+.table-row:last-child {
+    border-bottom: none;
+}
+
+.table-row:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.rank {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #333;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.rank-1 {
+    background: var(--color-gold-primary);
+    color: #000;
+}
+
+.rank-2 {
+    background: #E0E0E0;
+    color: #000;
+}
+
+/* Silver */
+.rank-3 {
+    background: #CD7F32;
+    color: #000;
+}
+
+/* Bronze */
+
+.player-name-row {
+    color: #fff;
+    font-weight: 500;
+}
+
+.points-row {
+    color: var(--color-gold-text);
+    font-weight: 700;
+}
+
+.trend.up {
+    color: #4CAF50;
+}
+
+.trend.down {
+    color: #F44336;
+}
+
+.trend.same {
+    color: #9E9E9E;
+}
