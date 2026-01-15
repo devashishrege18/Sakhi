@@ -16,6 +16,161 @@ const INDIAN_LANGUAGES = [
   { code: 'en-IN', name: 'English', english: 'English' },
 ];
 
+// UI Translations for all languages
+const UI_TRANSLATIONS = {
+  'hi-IN': {
+    welcome: 'आज मैं आपकी कैसे मदद कर सकती हूं?',
+    subtitle: 'मैं साखी हूं - आपकी स्वास्थ्य सहेली',
+    newChat: 'नई चैट',
+    recentChats: 'हाल की चैट',
+    noChats: 'अभी तक कोई चैट नहीं',
+    placeholder: 'साखी से कुछ पूछें...',
+    suggestions: [
+      ['PCOS के बारे में बताओ', 'PCOS जानकारी'],
+      ['पास का अस्पताल दिखाओ', 'अस्पताल खोजें'],
+      ['डॉक्टर से बात करनी है', 'डॉक्टर से परामर्श'],
+      ['पीरियड ट्रैक करना है', 'पीरियड ट्रैक']
+    ],
+    footer: 'साखी AI का उपयोग करती है। जवाब केवल जानकारी के लिए हैं।'
+  },
+  'bn-IN': {
+    welcome: 'আজ আমি কিভাবে সাহায্য করতে পারি?',
+    subtitle: 'আমি সাখি - আপনার স্বাস্থ্য সঙ্গী',
+    newChat: 'নতুন চ্যাট',
+    recentChats: 'সাম্প্রতিক চ্যাট',
+    noChats: 'এখনো কোন চ্যাট নেই',
+    placeholder: 'সাখিকে কিছু জিজ্ঞাসা করুন...',
+    suggestions: [
+      ['PCOS সম্পর্কে বলুন', 'PCOS তথ্য'],
+      ['কাছের হাসপাতাল দেখান', 'হাসপাতাল খুঁজুন'],
+      ['ডাক্তারের সাথে কথা বলতে চাই', 'ডাক্তার পরামর্শ'],
+      ['পিরিয়ড ট্র্যাক করতে চাই', 'পিরিয়ড ট্র্যাক']
+    ],
+    footer: 'সাখি AI ব্যবহার করে। উত্তর শুধুমাত্র তথ্যের জন্য।'
+  },
+  'te-IN': {
+    welcome: 'ఈ రోజు నేను మీకు ఎలా సహాయం చేయగలను?',
+    subtitle: 'నేను సాఖి - మీ ఆరోగ్య సహచరి',
+    newChat: 'కొత్త చాట్',
+    recentChats: 'ఇటీవలి చాట్లు',
+    noChats: 'ఇంకా చాట్లు లేవు',
+    placeholder: 'సాఖిని ఏదైనా అడగండి...',
+    suggestions: [
+      ['PCOS గురించి చెప్పండి', 'PCOS సమాచారం'],
+      ['సమీపంలోని ఆసుపత్రి చూపించు', 'ఆసుపత్రులు కనుగొనండి'],
+      ['వైద్యునితో మాట్లాడాలి', 'వైద్య సలహా'],
+      ['పీరియడ్ ట్రాక్ చేయాలి', 'పీరియడ్ ట్రాక్']
+    ],
+    footer: 'సాఖి AI ఉపయోగిస్తుంది. సమాధానాలు సమాచారం కోసం మాత్రమే.'
+  },
+  'mr-IN': {
+    welcome: 'आज मी तुम्हाला कशी मदत करू शकते?',
+    subtitle: 'मी साखी आहे - तुमची आरोग्य मैत्रीण',
+    newChat: 'नवीन चॅट',
+    recentChats: 'अलीकडील चॅट',
+    noChats: 'अजून चॅट नाहीत',
+    placeholder: 'साखीला काहीही विचारा...',
+    suggestions: [
+      ['PCOS बद्दल सांगा', 'PCOS माहिती'],
+      ['जवळचे रुग्णालय दाखवा', 'रुग्णालय शोधा'],
+      ['डॉक्टरांशी बोलायचे आहे', 'डॉक्टर सल्ला'],
+      ['पीरियड ट्रॅक करायचे आहे', 'पीरियड ट्रॅक']
+    ],
+    footer: 'साखी AI वापरते. उत्तरे फक्त माहितीसाठी आहेत.'
+  },
+  'ta-IN': {
+    welcome: 'இன்று நான் உங்களுக்கு எவ்வாறு உதவ முடியும்?',
+    subtitle: 'நான் சாகி - உங்கள் ஆரோக்கிய துணை',
+    newChat: 'புதிய அரட்டை',
+    recentChats: 'சமீபத்திய அரட்டைகள்',
+    noChats: 'இன்னும் அரட்டைகள் இல்லை',
+    placeholder: 'சாகியிடம் ஏதாவது கேளுங்கள்...',
+    suggestions: [
+      ['PCOS பற்றி சொல்லுங்கள்', 'PCOS தகவல்'],
+      ['அருகிலுள்ள மருத்துவமனை காட்டு', 'மருத்துவமனை கண்டறியவும்'],
+      ['மருத்துவரிடம் பேச வேண்டும்', 'மருத்துவர் ஆலோசனை'],
+      ['மாதவிடாய் கண்காணிக்க வேண்டும்', 'மாதவிடாய் கண்காணிப்பு']
+    ],
+    footer: 'சாகி AI பயன்படுத்துகிறது. பதில்கள் தகவலுக்காக மட்டுமே.'
+  },
+  'gu-IN': {
+    welcome: 'આજે હું તમને કેવી રીતે મદદ કરી શકું?',
+    subtitle: 'હું સાખી છું - તમારી આરોગ્ય સાથી',
+    newChat: 'નવી ચેટ',
+    recentChats: 'તાજેતરની ચેટ',
+    noChats: 'હજુ સુધી કોઈ ચેટ નથી',
+    placeholder: 'સાખીને કંઈપણ પૂછો...',
+    suggestions: [
+      ['PCOS વિશે જણાવો', 'PCOS માહિતી'],
+      ['નજીકની હોસ્પિટલ બતાવો', 'હોસ્પિટલ શોધો'],
+      ['ડોક્ટર સાથે વાત કરવી છે', 'ડોક્ટર સલાહ'],
+      ['પીરિયડ ટ્રેક કરવું છે', 'પીરિયડ ટ્રેક']
+    ],
+    footer: 'સાખી AI નો ઉપયોગ કરે છે. જવાબો માત્ર માહિતી માટે છે.'
+  },
+  'kn-IN': {
+    welcome: 'ಇಂದು ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಬಹುದು?',
+    subtitle: 'ನಾನು ಸಾಖಿ - ನಿಮ್ಮ ಆರೋಗ್ಯ ಸಂಗಾತಿ',
+    newChat: 'ಹೊಸ ಚಾಟ್',
+    recentChats: 'ಇತ್ತೀಚಿನ ಚಾಟ್‌ಗಳು',
+    noChats: 'ಇನ್ನೂ ಚಾಟ್‌ಗಳಿಲ್ಲ',
+    placeholder: 'ಸಾಖಿಗೆ ಏನಾದರೂ ಕೇಳಿ...',
+    suggestions: [
+      ['PCOS ಬಗ್ಗೆ ಹೇಳಿ', 'PCOS ಮಾಹಿತಿ'],
+      ['ಹತ್ತಿರದ ಆಸ್ಪತ್ರೆ ತೋರಿಸಿ', 'ಆಸ್ಪತ್ರೆ ಹುಡುಕಿ'],
+      ['ವೈದ್ಯರೊಂದಿಗೆ ಮಾತನಾಡಬೇಕು', 'ವೈದ್ಯರ ಸಲಹೆ'],
+      ['ಮಾಸಿಕ ಟ್ರ್ಯಾಕ್ ಮಾಡಬೇಕು', 'ಮಾಸಿಕ ಟ್ರ್ಯಾಕ್']
+    ],
+    footer: 'ಸಾಖಿ AI ಬಳಸುತ್ತದೆ. ಉತ್ತರಗಳು ಮಾಹಿತಿಗಾಗಿ ಮಾತ್ರ.'
+  },
+  'ml-IN': {
+    welcome: 'ഇന്ന് എനിക്ക് നിങ്ങളെ എങ്ങനെ സഹായിക്കാനാകും?',
+    subtitle: 'ഞാൻ സാഖി - നിങ്ങളുടെ ആരോഗ്യ സഹചാരി',
+    newChat: 'പുതിയ ചാറ്റ്',
+    recentChats: 'സമീപകാല ചാറ്റുകൾ',
+    noChats: 'ഇതുവരെ ചാറ്റുകളില്ല',
+    placeholder: 'സാഖിയോട് എന്തെങ്കിലും ചോദിക്കൂ...',
+    suggestions: [
+      ['PCOS നെ കുറിച്ച് പറയൂ', 'PCOS വിവരങ്ങൾ'],
+      ['അടുത്തുള്ള ആശുപത്രി കാണിക്കൂ', 'ആശുപത്രി കണ്ടെത്തുക'],
+      ['ഡോക്ടറോട് സംസാരിക്കണം', 'ഡോക്ടർ ഉപദേശം'],
+      ['പീരിയഡ് ട്രാക്ക് ചെയ്യണം', 'പീരിയഡ് ട്രാക്ക്']
+    ],
+    footer: 'സാഖി AI ഉപയോഗിക്കുന്നു. ഉത്തരങ്ങൾ വിവരത്തിന് മാത്രം.'
+  },
+  'pa-IN': {
+    welcome: 'ਅੱਜ ਮੈਂ ਤੁਹਾਡੀ ਕਿਵੇਂ ਮਦਦ ਕਰ ਸਕਦੀ ਹਾਂ?',
+    subtitle: 'ਮੈਂ ਸਾਖੀ ਹਾਂ - ਤੁਹਾਡੀ ਸਿਹਤ ਸਾਥੀ',
+    newChat: 'ਨਵੀਂ ਚੈਟ',
+    recentChats: 'ਹਾਲੀਆ ਚੈਟ',
+    noChats: 'ਹਾਲੇ ਕੋਈ ਚੈਟ ਨਹੀਂ',
+    placeholder: 'ਸਾਖੀ ਨੂੰ ਕੁਝ ਪੁੱਛੋ...',
+    suggestions: [
+      ['PCOS ਬਾਰੇ ਦੱਸੋ', 'PCOS ਜਾਣਕਾਰੀ'],
+      ['ਨੇੜੇ ਦਾ ਹਸਪਤਾਲ ਦਿਖਾਓ', 'ਹਸਪਤਾਲ ਲੱਭੋ'],
+      ['ਡਾਕਟਰ ਨਾਲ ਗੱਲ ਕਰਨੀ ਹੈ', 'ਡਾਕਟਰ ਸਲਾਹ'],
+      ['ਪੀਰੀਅਡ ਟ੍ਰੈਕ ਕਰਨਾ ਹੈ', 'ਪੀਰੀਅਡ ਟ੍ਰੈਕ']
+    ],
+    footer: 'ਸਾਖੀ AI ਵਰਤਦੀ ਹੈ। ਜਵਾਬ ਸਿਰਫ਼ ਜਾਣਕਾਰੀ ਲਈ ਹਨ।'
+  },
+  'en-IN': {
+    welcome: 'How can I help you today?',
+    subtitle: "I'm Sakhi - your health companion",
+    newChat: 'New Chat',
+    recentChats: 'Recent Chats',
+    noChats: 'No chats yet',
+    placeholder: 'Ask Sakhi something...',
+    suggestions: [
+      ['Tell me about PCOS', 'PCOS information'],
+      ['Show nearby hospitals', 'Find hospitals'],
+      ['I want to talk to a doctor', 'Consult doctor'],
+      ['Track my periods', 'Track periods']
+    ],
+    footer: 'Sakhi uses AI. Responses are for information only.'
+  }
+};
+
+
 const VOICE_FEATURES = {
   hospitals: {
     keywords: [
@@ -352,6 +507,9 @@ export default function Home() {
   const handleKey = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); } };
   const waveHeights = [30, 50, 75, 40, 65, 90, 55, 80, 45, 70, 35];
 
+  // Get translations for current language
+  const t = UI_TRANSLATIONS[selectedLang.code] || UI_TRANSLATIONS['en-IN'];
+
   return (
     <div className="app">
       {/* Sidebar */}
@@ -359,7 +517,7 @@ export default function Home() {
         <div className="sidebar-top">
           <button onClick={startNewChat} className="new-chat-btn">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14" /></svg>
-            New chat
+            {t.newChat}
           </button>
           {/* Close button for mobile */}
           <button onClick={() => setShowSidebar(false)} className="sidebar-close-btn">
@@ -370,9 +528,9 @@ export default function Home() {
         <nav className="sidebar-nav">
           {/* Chat History */}
           <div className="nav-section">
-            <span className="nav-title">Recent Chats</span>
+            <span className="nav-title">{t.recentChats}</span>
             {chatHistory.length === 0 ? (
-              <p className="no-chats">No chats yet</p>
+              <p className="no-chats">{t.noChats}</p>
             ) : (
               chatHistory.slice(0, 10).map(chat => (
                 <div key={chat.id} onClick={() => loadChat(chat)} className={`chat-item ${currentChatId === chat.id ? 'active' : ''}`}>
@@ -441,11 +599,11 @@ export default function Home() {
           {messages.length === 0 ? (
             <div className="welcome">
               <img src="/sakhi-logo.png" alt="Sakhi" className="welcome-logo" />
-              <h1>How can I help you today?</h1>
-              <p className="welcome-sub">Main Sakhi hoon - aapki health companion </p>
+              <h1>{t.welcome}</h1>
+              <p className="welcome-sub">{t.subtitle}</p>
 
               <div className="suggestions">
-                {[[' PCOS ke baare mein batao', 'PCOS information'], [' Nearby hospital dikhao', 'Find hospitals'], [' Doctor se baat karni hai', 'Consult doctor'], [' Period track karna hai', 'Track periods']].map(([q, label]) => (
+                {t.suggestions.map(([q, label]) => (
                   <button key={q} onClick={() => handleVoiceCommand(q)} className="suggestion-card">
                     <span className="suggestion-text">{q}</span>
                     <span className="suggestion-label">{label}</span>
