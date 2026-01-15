@@ -1,12 +1,7 @@
 ﻿'use client';
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-// import { saveChat, getChats, deleteChat, newChatId } from '../lib/firebase';
-// MOCK FIREBASE TO UNBLOCK BUILD ONLY (Preserving other bugs)
-const saveChat = async () => { };
-const getChats = async () => [];
-const deleteChat = async () => { };
-const newChatId = () => Date.now().toString();
+import { saveChat, getChats, deleteChat, newChatId } from '../lib/firebase';
 
 const INDIAN_LANGUAGES = [
   { code: 'hi-IN', name: '\u0939\u093F\u0902\u0926\u0940', english: 'Hindi' },
