@@ -547,6 +547,13 @@ export default function Home() {
     try {
       const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: userMsg.text, history: messages, language: selectedLang.code }) });
       const data = await res.json();
+
+      // Auto-switch language based on AI detection
+      if (data.language && data.language !== selectedLang.code) {
+        const newLang = INDIAN_LANGUAGES.find(l => l.code === data.language);
+        if (newLang) setSelectedLang(newLang);
+      }
+
       setMessages(prev => [...prev, { role: 'assistant', content: data.content, intent: data.intent }]);
       speakResponse(data.content);
       loadChatHistory();

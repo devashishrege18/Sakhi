@@ -17,8 +17,9 @@ export async function POST(req) {
         // Alternative: "Sarah" or generic. Rachel: 21m00Tcm4TlvDq8ikWAM
         const VOICE_ID = "21m00Tcm4TlvDq8ikWAM";
 
-        // Call ElevenLabs API
-        const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`, {
+        // Call ElevenLabs API with Latency Optimization
+        // optimize_streaming_latency=4 (Max speed)
+        const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}?optimize_streaming_latency=4`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -40,13 +41,10 @@ export async function POST(req) {
             return NextResponse.json({ error: 'TTS API error' }, { status: response.status });
         }
 
-        // Return the audio stream directly
-        const audioBuffer = await response.arrayBuffer();
-
-        return new NextResponse(audioBuffer, {
+        // Stream the audio directly to client (Pass-through)
+        return new NextResponse(response.body, {
             headers: {
                 'Content-Type': 'audio/mpeg',
-                'Content-Length': audioBuffer.byteLength.toString(),
             },
         });
 

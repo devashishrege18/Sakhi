@@ -38,15 +38,18 @@ export async function POST(req) {
 
 DEFAULT LANGUAGE PREFERENCE: ${languageInstruction}
 
-CRITICAL INSTRUCTION - AUTO-DETECT LANGUAGE:
+CRITICAL INSTRUCTION - AUTO-DETECT LANGUAGE & JSON OUTPUT:
 1. First, DETECT the language of the user's message. Use mixed-script detection (e.g. "kya haal hai" = Hindi).
-2. output MUST be in the NATIVE SCRIPT of the DETECTED language.
-   - If user speaks Hindi (Latin/Devanagari) -> Respond in HINDI (Devanagari)
-   - If user speaks Tamil (Latin/Tamil) -> Respond in TAMIL (Tamil Script)
-   - If user speaks English -> Respond in English
-   - If user switches language, SWITCH your response language to match them immediately.
+2. You MUST respond in valid JSON format:
+   {
+     "language": "code", // e.g. hi-IN, ta-IN, en-IN
+     "content": "response text in NATIVE SCRIPT"
+   }
 
-IMPORTANT: Do NOT use "Hinglish" or Latin characters for Indian languages. Use the correct script so the text-to-speech engine speaks it correctly.
+SUPPORTED CODES:
+hi-IN (Hindi), bn-IN (Bengali), te-IN (Telugu), mr-IN (Marathi), ta-IN (Tamil), gu-IN (Gujarati), kn-IN (Kannada), ml-IN (Malayalam), pa-IN (Punjabi), en-IN (English)
+
+IMPORTANT: Do NOT use "Hinglish" or Latin characters for Indian languages. Use the correct script.
 
 PERSONALITY:
 - Be like a caring older sister (didi/akka/tai) - supportive, non-judgmental
@@ -60,39 +63,20 @@ CORE CAPABILITIES:
 4. General Health: Any health-related question
 
 FEATURE DETECTION:
-When user mentions these topics (in ANY language), suggest the relevant feature:
-
-HOSPITALS: pain, emergency, blood, accident, urgent
-→ Suggest "Nearby Hospitals" / "Paas ke aspataal"
-
-PHARMACY: medicine, pads, tablets, buy
-→ Suggest "Pharmacy" / "Dawai ki dukaan"
-
-DOCTORS: doctor, consultation, specialist
-→ Suggest "Talk to Doctor" / "Doctor se baat karein"
-
-WELLNESS: diet, exercise, yoga, stress
-→ Suggest "Wellness Tips" / "Sehat ke nuskhe"
-
-FORUM: discuss, share, community
-→ Suggest "Community Forum" / "Charcha karein"
+If user mentions relevant topics, include suggestion in "content".
 
 RESPONSE RULES:
-1. RESPONSE MUST BE IN THE NATIVE SCRIPT of the DETECTED language.
+1. "content" MUST be in the NATIVE SCRIPT of the DETECTED language.
 2. Keep responses 50-80 words.
 3. First acknowledge the user's concern.
 4. Give helpful information.
-5. Suggest relevant feature if applicable.
 
 EXAMPLES:
-[Input: "pet duk raha hai" (Hindi detected)]
-→ Output: "बहन, पेट दर्द बहुत परेशान कर सकता है। अगर यह अभी शुरू हुआ है, तो आराम करें और गर्म पानी पिएं। अगर दर्द बहुत ज्यादा है, तो मैं आपको पास के अस्पताल दिखा सकती हूं। क्या आप डॉक्टर से बात करना चाहेंगी?"
+[Input: "pet duk raha hai"]
+→ Output: { "language": "hi-IN", "content": "बहन, पेट दर्द बहुत परेशान कर सकता है। अगर यह अभी शुरू हुआ है, तो आराम करें और गर्म पानी पिएं। अगर दर्द बहुत ज्यादा है, तो मैं आपको पास के अस्पताल दिखा सकती हूं। क्या आप डॉक्टर से बात करना चाहेंगी?" }
 
-[Input: "enakku thalai vali" (Tamil detected)]
-→ Output: "சகோதரி, தலைவலி இருந்தால் ஓய்வு எடுங்கள். அதிக ஸ்ட்ரெஸ் வேண்டாம். இது தொடர்ந்தால், மருத்துவரை அணுகுவது நல்லது. நான் உங்களுக்கு அருகில் உள்ள மருத்துவமனைகளைக் காட்டட்டுमा?"
-
-[Input: "I feel sick" (English detected)]
-→ Output: "I'm sorry to hear that. Can you tell me more about your symptoms? If it's urgent, I can show you nearby hospitals, or you can consult a doctor through our app."`;
+[Input: "enakku thalai vali"]
+→ Output: { "language": "ta-IN", "content": "சகோதரி, தலைவலி இருந்தால் ஓய்வு எடுங்கள். அதிக ஸ்ட்ரெஸ் வேண்டாம். இது தொடர்ந்தால், மருத்துவரை அணுகுவது நல்லது. நான் உங்களுக்கு அருகில் உள்ள மருத்துவமனைகளைக் காட்டட்டுமா?" }`;
 
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
@@ -108,7 +92,8 @@ EXAMPLES:
           { role: "user", content: message }
         ],
         temperature: 0.7,
-        max_tokens: 400
+        max_tokens: 400,
+        response_format: { type: "json_object" } // Force valid JSON
       }),
     });
 
@@ -117,8 +102,11 @@ EXAMPLES:
     }
 
     const data = await response.json();
-    const text = data.choices?.[0]?.message?.content || "Maaf karo behan, thodi technical issue hai.";
-    return NextResponse.json({ content: text });
+    const result = JSON.parse(data.choices?.[0]?.message?.content || "{}");
+    const text = result.content || "Maaf karo behan, thodi technical issue hai.";
+    const detectedLang = result.language || "hi-IN";
+
+    return NextResponse.json({ content: text, language: detectedLang });
   } catch (error) {
     console.error("Chat error:", error);
     return NextResponse.json({ content: "Technical error. Please refresh." });
