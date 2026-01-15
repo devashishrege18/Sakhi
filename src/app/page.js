@@ -324,16 +324,74 @@ export default function Home() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true); // Default true, will be adjusted on mount
   const [showLanguages, setShowLanguages] = useState(false);
-  const [selectedLang, setSelectedLang] = useState(INDIAN_LANGUAGES[0]);
+  // Default to English (Index 9) to act as a 'Universal Listener' for the first command
+  // This allows the browser to capture phonetic Hindi/Tamil/etc. which the AI then auto-detects.
+  const [selectedLang, setSelectedLang] = useState(INDIAN_LANGUAGES[9]);
   const [femaleVoice, setFemaleVoice] = useState(null);
   const [error, setError] = useState(null); // Debugging TTS
   const [chatHistory, setChatHistory] = useState([]);
   const [currentChatId, setCurrentChatId] = useState(null);
   const messagesEndRef = useRef(null);
-  const mediaRecorderRef = useRef(null);
-  const audioChunksRef = useRef([]);
+  const recognitionRef = useRef(null);
   const shouldListenRef = useRef(false);
   const audioRef = useRef(null); // Ref for ElevenLabs audio
+
+  // ... (useEffects) ...
+
+  // Restore Speech Recognition Logic
+  useEffect(() => { initSpeechRecognition(selectedLang.code); }, [selectedLang]);
+
+  const initSpeechRecognition = (langCode) => {
+    if (typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognitionRef.current = new SR();
+      recognitionRef.current.continuous = false; // Single utterance
+      recognitionRef.current.interimResults = true; // Show text as you speak
+      recognitionRef.current.lang = langCode;
+
+      recognitionRef.current.onresult = (e) => {
+        const transcript = e.results[0][0].transcript;
+        setInput(transcript);
+        if (e.results[0].isFinal) {
+          handleVoiceCommand(transcript);
+          setIsListening(false);
+        }
+      };
+
+      recognitionRef.current.onerror = (e) => {
+        console.error('Speech Error:', e);
+        setIsListening(false);
+      };
+      recognitionRef.current.onend = () => setIsListening(false);
+    }
+  };
+
+  const toggleListening = () => {
+    // Stop speaking if mic is toggled
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setIsSpeaking(false);
+    }
+
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+      return;
+    }
+
+    if (recognitionRef.current) {
+      try { recognitionRef.current.abort(); } catch (e) { }
+      // Re-init to ensure clean state
+      initSpeechRecognition(selectedLang.code);
+      try {
+        recognitionRef.current.start();
+        setIsListening(true);
+      } catch (e) {
+        console.error('Mic start error:', e);
+        setIsListening(false);
+      }
+    }
+  };
 
   // Load chat history on mount
   useEffect(() => {
@@ -415,87 +473,7 @@ export default function Home() {
     return () => document.removeEventListener('visibilitychange', handleVisibility);
   }, []);
 
-  const processAudio = async (blob) => {
-    try {
-      // Optional: Show a "Processing..." toast or state if needed
 
-      const formData = new FormData();
-      formData.append('file', blob, 'recording.webm');
-
-      const res = await fetch('/api/stt', { method: 'POST', body: formData });
-
-      if (!res.ok) {
-        let errMsg = 'Voice Processing Failed';
-        try { const err = await res.json(); errMsg = err.error || errMsg; } catch (e) { }
-        throw new Error(errMsg);
-      }
-
-      const data = await res.json();
-
-      if (data.text) {
-        setInput(data.text);
-
-        // Auto-switch language from Whisper detection
-        if (data.language) {
-          const map = { 'hi': 'hi-IN', 'bn': 'bn-IN', 'te': 'te-IN', 'mr': 'mr-IN', 'ta': 'ta-IN', 'gu': 'gu-IN', 'kn': 'kn-IN', 'ml': 'ml-IN', 'pa': 'pa-IN', 'en': 'en-IN' };
-          const code = map[data.language];
-          if (code && code !== selectedLang.code) {
-            const newLang = INDIAN_LANGUAGES.find(l => l.code === code);
-            if (newLang) setSelectedLang(newLang);
-          }
-        }
-
-        handleVoiceCommand(data.text);
-      }
-    } catch (e) {
-      console.error('STT Processing Error:', e);
-      setError('Voice Error: ' + e.message);
-    }
-  };
-
-  const toggleListening = async () => {
-    // 1. Stop audio playback if speaking
-    if (audioRef.current) {
-      audioRef.current.pause();
-      setIsSpeaking(false);
-    }
-
-    // 2. Stop Listening
-    if (isListening) {
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-        mediaRecorderRef.current.stop();
-      }
-      setIsListening(false);
-      return;
-    }
-
-    // 3. Start Listening
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
-      audioChunksRef.current = [];
-
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
-        }
-      };
-
-      mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        processAudio(audioBlob);
-        stream.getTracks().forEach(track => track.stop()); // Cleanup
-      };
-
-      mediaRecorder.start();
-      setIsListening(true);
-    } catch (e) {
-      console.error('Mic Access Error:', e);
-      alert('Microphone access required for voice features.');
-      setIsListening(false);
-    }
-  };
 
   const speakResponse = async (text, nav) => {
     // Stop any existing audio
