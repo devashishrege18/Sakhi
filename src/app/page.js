@@ -18,26 +18,132 @@ const INDIAN_LANGUAGES = [
 
 const VOICE_FEATURES = {
   hospitals: {
-    keywords: ['hospital', 'clinic', 'emergency', 'ambulance', 'nearby', 'aspatal', 'अस्पताल', 'dard', 'pain', 'accident', 'blood', 'urgent', 'खून', 'emergency room', '108'],
+    keywords: [
+      // English
+      'hospital', 'clinic', 'emergency', 'ambulance', 'nearby', 'medical', 'urgent', 'pain', 'accident', 'blood', '108', '102',
+      // Hindi
+      'अस्पताल', 'aspatal', 'dard', 'खून', 'emergency room', 'dawakhana', 'चिकित्सालय',
+      // Bengali
+      'হাসপাতাল', 'বেদনা', 'জরুরি',
+      // Telugu
+      'ఆసుపత్రి', 'నొప్పి', 'అత్యవసర',
+      // Tamil
+      'மருத்துவமனை', 'வலி', 'அவசரம்',
+      // Marathi
+      'रुग्णालय', 'वेदना', 'आणीबाणी',
+      // Gujarati
+      'હોસ્પિટલ', 'દુખાવો',
+      // Kannada
+      'ಆಸ್ಪತ್ರೆ', 'ನೋವು',
+      // Malayalam
+      'ആശുപത്രി', 'വേദന',
+      // Punjabi
+      'ਹਸਪਤਾਲ', 'ਦਰਦ'
+    ],
     route: '/hospitals'
   },
   doctors: {
-    keywords: ['doctor', 'consultation', 'consult', 'specialist', 'gynecologist', 'डॉक्टर', 'baat karni', 'checkup', 'appointment', 'video call', 'talk to', 'milna hai', 'dikhana hai'],
+    keywords: [
+      // English
+      'doctor', 'consultation', 'consult', 'specialist', 'gynecologist', 'checkup', 'appointment', 'video call', 'talk to',
+      // Hindi
+      'डॉक्टर', 'baat karni', 'milna hai', 'dikhana hai', 'दिखाना', 'जांच',
+      // Bengali
+      'ডাক্তার', 'পরামর্শ',
+      // Telugu
+      'డాక్టర్', 'వైద్యుడు',
+      // Tamil
+      'மருத்துவர்', 'ஆலோசனை',
+      // Marathi
+      'वैद्य', 'तपासणी',
+      // Gujarati
+      'ડોક્ટર', 'તપાસ',
+      // Kannada
+      'ವೈದ್ಯ', 'ತಪಾಸಣೆ',
+      // Malayalam
+      'ഡോക്ടർ', 'പരിശോധന',
+      // Punjabi
+      'ਡਾਕਟਰ', 'ਸਲਾਹ'
+    ],
     route: '/doctors'
   },
   wellness: {
-    keywords: ['wellness', 'diet', 'exercise', 'yoga', 'fitness', 'healthy', 'weight', 'खाना', 'food', 'nutrition', 'workout', 'stretch', 'meditation', 'stress relief', 'lifestyle'],
+    keywords: [
+      // English
+      'wellness', 'diet', 'exercise', 'yoga', 'fitness', 'healthy', 'weight', 'food', 'nutrition', 'workout', 'meditation', 'stress', 'lifestyle',
+      // Hindi
+      'खाना', 'व्यायाम', 'योग', 'स्वास्थ्य', 'तनाव', 'आहार',
+      // Bengali
+      'খাবার', 'ব্যায়াম', 'যোগ',
+      // Telugu
+      'ఆహారం', 'వ్యాయామం', 'యోగా',
+      // Tamil
+      'உணவு', 'உடற்பயிற்சி', 'யோகா',
+      // Marathi
+      'आहार', 'व्यायाम', 'योगा',
+      // Gujarati
+      'ખોરાક', 'કસરત',
+      // Kannada
+      'ಆಹಾರ', 'ವ್ಯಾಯಾಮ',
+      // Malayalam
+      'ഭക്ഷണം', 'വ്യായാമം',
+      // Punjabi
+      'ਭੋਜਨ', 'ਕਸਰਤ'
+    ],
     route: '/wellness'
   },
   pharmacy: {
-    keywords: ['pharmacy', 'medicine', 'dawai', 'दवाई', 'tablet', 'pads', 'pad', 'sanitary', 'iron', 'calcium', 'vitamins', 'supplements', 'buy', 'kharidna', 'order', 'menstrual cup'],
+    keywords: [
+      // English
+      'pharmacy', 'medicine', 'tablet', 'pads', 'pad', 'sanitary', 'iron', 'calcium', 'vitamins', 'supplements', 'buy', 'order', 'menstrual cup',
+      // Hindi
+      'dawai', 'दवाई', 'गोली', 'पैड', 'खरीदना', 'kharidna', 'औषधि',
+      // Bengali
+      'ওষুধ', 'ট্যাবলেট', 'প্যাড',
+      // Telugu
+      'మందు', 'ట్యాబ్లెట్',
+      // Tamil
+      'மருந்து', 'பேட்',
+      // Marathi
+      'औषध', 'गोळी',
+      // Gujarati
+      'દવા', 'ગોળી',
+      // Kannada
+      'ಔಷಧ', 'ಮಾತ್ರೆ',
+      // Malayalam
+      'മരുന്ന്', 'ഗുളിക',
+      // Punjabi
+      'ਦਵਾਈ', 'ਗੋਲੀ'
+    ],
     route: '/pharmacy'
   },
   forum: {
-    keywords: ['forum', 'community', 'discuss', 'share', 'समुदाय', 'other women', 'auraton se', 'post', 'question', 'ask', 'batao', 'experience', 'stories'],
+    keywords: [
+      // English
+      'forum', 'community', 'discuss', 'share', 'other women', 'post', 'question', 'ask', 'experience', 'stories', 'talk',
+      // Hindi
+      'समुदाय', 'auraton se', 'batao', 'बताओ', 'पूछना', 'महिलाएं',
+      // Bengali
+      'সম্প্রদায়', 'আলোচনা',
+      // Telugu
+      'సమాజం', 'చర్చ',
+      // Tamil
+      'சமூகம்', 'கலந்துரையாடல்',
+      // Marathi
+      'समाज', 'चर्चा',
+      // Gujarati
+      'સમુદાય', 'ચર્ચા',
+      // Kannada
+      'ಸಮುದಾಯ', 'ಚರ್ಚೆ',
+      // Malayalam
+      'സമൂഹം', 'ചർച്ച',
+      // Punjabi
+      'ਭਾਈਚਾਰਾ', 'ਗੱਲਬਾਤ'
+    ],
     route: '/forum'
   },
 };
+
 
 
 export default function Home() {
