@@ -423,6 +423,13 @@ export default function Home() {
       formData.append('file', blob, 'recording.webm');
 
       const res = await fetch('/api/stt', { method: 'POST', body: formData });
+
+      if (!res.ok) {
+        let errMsg = 'Voice Processing Failed';
+        try { const err = await res.json(); errMsg = err.error || errMsg; } catch (e) { }
+        throw new Error(errMsg);
+      }
+
       const data = await res.json();
 
       if (data.text) {

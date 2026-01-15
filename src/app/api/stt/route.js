@@ -14,9 +14,17 @@ export async function POST(req) {
             return NextResponse.json({ error: 'API key not configured' }, { status: 500 });
         }
 
+
+        // Convert the uploaded file to a Buffer/Blob that node-fetch/Groq accepts reliably
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+
         // Create a new FormData for the Groq API request
         const groqFormData = new FormData();
-        groqFormData.append('file', file);
+        // Append as a Blob with filename
+        const fileBlob = new Blob([buffer], { type: file.type || 'audio/webm' });
+        groqFormData.append('file', fileBlob, 'recording.webm');
+
         groqFormData.append('model', 'whisper-large-v3'); // Multilingual model
         groqFormData.append('response_format', 'verbose_json'); // To get language detection
         // Prime the model to expect Indian languages and health context to prevent hallucinations (e.g. Arabic)
