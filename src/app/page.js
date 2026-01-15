@@ -324,9 +324,7 @@ export default function Home() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true); // Default true, will be adjusted on mount
   const [showLanguages, setShowLanguages] = useState(false);
-  // Default to English (Index 9) to act as a 'Universal Listener' for the first command
-  // This allows the browser to capture phonetic Hindi/Tamil/etc. which the AI then auto-detects.
-  const [selectedLang, setSelectedLang] = useState(INDIAN_LANGUAGES[9]);
+  const [selectedLang, setSelectedLang] = useState(INDIAN_LANGUAGES[0]);
   const [femaleVoice, setFemaleVoice] = useState(null);
   const [error, setError] = useState(null); // Debugging TTS
   const [chatHistory, setChatHistory] = useState([]);

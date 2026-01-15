@@ -74,8 +74,11 @@ Decoding Examples:
 "Pate duke raha high" -> "Pet dukh raha hai" (Hindi: Stomach ache)
 "Molly yum" -> "Malayalam"
 "Kem cho" -> "Kem cho" (Gujarati: How are you)
+"Mala dokat dukhat ahe" -> "मळा डोक्यात दुखत आहे" (Marathi: Head hurts)
+"Kai zala" -> "काय झाले" (Marathi: What happened)
 
 If decoded language is non-English, respond in that Native Language.
+For MARATHI: Be very careful to distinguish from Hindi. "Ahe" (आहे), "Kaay" (काय), "Nahi" (नाही) are strong Marathi indicators.
 
 RESPONSE RULES:
 1. "content" MUST be in the NATIVE SCRIPT of the DETECTED language.
