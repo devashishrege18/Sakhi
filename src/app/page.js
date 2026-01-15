@@ -649,7 +649,7 @@ export default function Home() {
         {/* Input Area */}
         <div className="input-wrapper">
           <div className="input-container">
-            <textarea value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKey} placeholder="Ask something to Sakhi..." rows={1} className="chat-input" />
+            <textarea value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKey} placeholder={t.placeholder} rows={1} className="chat-input" />
             <div className="input-actions">
               <button onClick={toggleListening} className={`action-btn mic ${isListening ? 'active' : ''}`}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" /><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" /></svg>
@@ -659,7 +659,7 @@ export default function Home() {
               </button>
             </div>
           </div>
-          <p className="input-footer">Sakhi uses AI. Responses are for informational purposes only.</p>
+          <p className="input-footer">{t.footer}</p>
         </div>
       </main>
 
