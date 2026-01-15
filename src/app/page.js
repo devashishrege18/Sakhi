@@ -312,7 +312,7 @@ export default function Home() {
   const [showSidebar, setShowSidebar] = useState(true); // Default true, will be adjusted on mount
   const [showLanguages, setShowLanguages] = useState(false);
   const [selectedLang, setSelectedLang] = useState(INDIAN_LANGUAGES[0]);
-  const [femaleVoice, setFemaleVoice] = useState(null);
+  const [error, setError] = useState(null); // Debugging TTS
   const [chatHistory, setChatHistory] = useState([]);
   const [currentChatId, setCurrentChatId] = useState(null);
   const messagesEndRef = useRef(null);
@@ -467,6 +467,7 @@ export default function Home() {
     // (ElevenLabs Multilingual v2 auto-detects language from script)
 
     setIsSpeaking(true);
+    setError(null);
 
     try {
       const res = await fetch('/api/tts', {
@@ -475,7 +476,11 @@ export default function Home() {
         body: JSON.stringify({ text }),
       });
 
-      if (!res.ok) throw new Error('TTS failed');
+      if (!res.ok) {
+        let errMsg = 'TTS Request Failed';
+        try { const data = await res.json(); errMsg = data.error || errMsg; } catch (e) { }
+        throw new Error(errMsg);
+      }
 
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
@@ -495,6 +500,7 @@ export default function Home() {
       await audio.play();
     } catch (e) {
       console.error('ElevenLabs TTS error:', e);
+      setError('Audio Error: ' + e.message + '. (Check API Key)');
       setIsSpeaking(false);
     }
   };
@@ -539,6 +545,11 @@ export default function Home() {
 
   return (
     <div className="app">
+      {error && (
+        <div style={{ position: 'fixed', top: 20, left: '50%', transform: 'translateX(-50%)', background: '#ff4444', color: 'white', padding: '10px 20px', borderRadius: 20, zIndex: 2000, boxShadow: '0 5px 15px rgba(0,0,0,0.3)', cursor: 'pointer' }} onClick={() => setError(null)}>
+          {error} ✕
+        </div>
+      )}
       {/* Sidebar */}
       <aside className={`sidebar ${showSidebar ? 'open' : ''}`}>
         <div className="sidebar-top">
