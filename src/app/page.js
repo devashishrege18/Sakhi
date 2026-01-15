@@ -330,7 +330,8 @@ export default function Home() {
   const [chatHistory, setChatHistory] = useState([]);
   const [currentChatId, setCurrentChatId] = useState(null);
   const messagesEndRef = useRef(null);
-  const recognitionRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
   const shouldListenRef = useRef(false);
   const audioRef = useRef(null); // Ref for ElevenLabs audio
 
@@ -398,7 +399,7 @@ export default function Home() {
     if (typeof window !== 'undefined') { loadVoices(); window.speechSynthesis?.addEventListener('voiceschanged', loadVoices); }
   }, []);
 
-  useEffect(() => { initSpeechRecognition(selectedLang.code); }, [selectedLang]);
+
 
   // Stop speech when tab loses focus or route changes
   useEffect(() => {
@@ -414,59 +415,78 @@ export default function Home() {
     return () => document.removeEventListener('visibilitychange', handleVisibility);
   }, []);
 
-  const initSpeechRecognition = (langCode) => {
-    if (typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
-      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognitionRef.current = new SR();
-      recognitionRef.current.continuous = false; // Single utterance only
-      recognitionRef.current.interimResults = true; // Show interim for UX
-      recognitionRef.current.lang = langCode;
+  const processAudio = async (blob) => {
+    try {
+      // Optional: Show a "Processing..." toast or state if needed
 
-      recognitionRef.current.onresult = (e) => {
-        const transcript = e.results[0][0].transcript;
-        setInput(transcript);
-        // ONLY process when result is FINAL to prevent duplicates
-        if (e.results[0].isFinal) {
-          handleVoiceCommand(transcript);
-          setIsListening(false);
+      const formData = new FormData();
+      formData.append('file', blob, 'recording.webm');
+
+      const res = await fetch('/api/stt', { method: 'POST', body: formData });
+      const data = await res.json();
+
+      if (data.text) {
+        setInput(data.text);
+
+        // Auto-switch language from Whisper detection
+        if (data.language) {
+          const map = { 'hi': 'hi-IN', 'bn': 'bn-IN', 'te': 'te-IN', 'mr': 'mr-IN', 'ta': 'ta-IN', 'gu': 'gu-IN', 'kn': 'kn-IN', 'ml': 'ml-IN', 'pa': 'pa-IN', 'en': 'en-IN' };
+          const code = map[data.language];
+          if (code && code !== selectedLang.code) {
+            const newLang = INDIAN_LANGUAGES.find(l => l.code === code);
+            if (newLang) setSelectedLang(newLang);
+          }
         }
-      };
 
-      recognitionRef.current.onerror = () => setIsListening(false);
-      recognitionRef.current.onend = () => setIsListening(false);
+        handleVoiceCommand(data.text);
+      }
+    } catch (e) {
+      console.error('STT Processing Error:', e);
+      setError('Voice Error: ' + e.message);
     }
   };
 
-  const toggleListening = () => {
-    // Stop speaking if mic is toggled
+  const toggleListening = async () => {
+    // 1. Stop audio playback if speaking
     if (audioRef.current) {
       audioRef.current.pause();
       setIsSpeaking(false);
     }
 
+    // 2. Stop Listening
     if (isListening) {
-      // Stop listening
-      recognitionRef.current?.stop();
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+        mediaRecorderRef.current.stop();
+      }
       setIsListening(false);
       return;
     }
 
-    // Cleanup any existing instance to prevent duplicates
-    if (recognitionRef.current) {
-      try { recognitionRef.current.abort(); } catch (e) { }
-    }
+    // 3. Start Listening
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
 
-    // Fresh init with current language
-    initSpeechRecognition(selectedLang.code);
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
 
-    if (recognitionRef.current) {
-      try {
-        recognitionRef.current.start();
-        setIsListening(true);
-      } catch (e) {
-        console.error('Mic start error:', e);
-        setIsListening(false);
-      }
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        processAudio(audioBlob);
+        stream.getTracks().forEach(track => track.stop()); // Cleanup
+      };
+
+      mediaRecorder.start();
+      setIsListening(true);
+    } catch (e) {
+      console.error('Mic Access Error:', e);
+      alert('Microphone access required for voice features.');
+      setIsListening(false);
     }
   };
 
