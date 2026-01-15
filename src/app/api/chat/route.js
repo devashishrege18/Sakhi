@@ -75,7 +75,10 @@ Decoding Examples:
 "Molly yum" -> "Malayalam"
 "Kem cho" -> "Kem cho" (Gujarati: How are you)
 "Mala dokat dukhat ahe" -> "मळा डोक्यात दुखत आहे" (Marathi: Head hurts)
-"Kai zala" -> "काय झाले" (Marathi: What happened)
+"Kemon acho" -> "Kemon acho" (Bengali: How are you)
+"Baguunnara" -> "Bagunnara" (Telugu: Are you well?)
+"Hegiddira" -> "Hegiddira" (Kannada: How are you?)
+"Ki haal hai" -> "Ki haal hai" (Punjabi: How are you?)
 
 If decoded language is non-English, respond in that Native Language.
 For MARATHI: Be very careful to distinguish from Hindi. "Ahe" (आहे), "Kaay" (काय), "Nahi" (नाही) are strong Marathi indicators.
