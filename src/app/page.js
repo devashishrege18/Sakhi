@@ -36,7 +36,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(typeof window !== 'undefined' ? window.innerWidth > 768 : false);
+  const [showSidebar, setShowSidebar] = useState(true); // Default true, will be adjusted on mount
   const [showLanguages, setShowLanguages] = useState(false);
   const [selectedLang, setSelectedLang] = useState(INDIAN_LANGUAGES[0]);
   const [femaleVoice, setFemaleVoice] = useState(null);
@@ -49,6 +49,10 @@ export default function Home() {
   // Load chat history on mount
   useEffect(() => {
     loadChatHistory();
+    // Hide sidebar on mobile on initial load only
+    if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+      setShowSidebar(false);
+    }
   }, []);
 
   // Auto-save chat when messages change
@@ -229,6 +233,10 @@ export default function Home() {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14" /></svg>
             New chat
           </button>
+          {/* Close button for mobile */}
+          <button onClick={() => setShowSidebar(false)} className="sidebar-close-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12" /></svg>
+          </button>
         </div>
 
         <nav className="sidebar-nav">
@@ -377,9 +385,11 @@ export default function Home() {
         /* Sidebar - Original Purple Theme */
         .sidebar { width: 280px; background: linear-gradient(180deg, #4a1a6b 0%, #6b21a8 100%); display: flex; flex-direction: column; transition: all 0.3s; }
         .sidebar:not(.open) { width: 0; overflow: hidden; }
-        .sidebar-top { padding: 16px; }
-        .new-chat-btn { width: 100%; padding: 14px; display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; color: white; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+        .new-chat-btn { flex: 1; padding: 14px; display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; color: white; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
         .new-chat-btn:hover { background: rgba(255,255,255,0.25); transform: translateY(-2px); }
+        .sidebar-close-btn { display: none; background: rgba(255,255,255,0.15); border: none; padding: 10px; border-radius: 10px; color: white; cursor: pointer; transition: all 0.2s; }
+        .sidebar-close-btn:hover { background: rgba(255,255,255,0.3); }
+        .sidebar-top { padding: 16px; display: flex; align-items: center; gap: 10px; }
         .sidebar-nav { flex: 1; padding: 12px; overflow-y: auto; }
         .nav-section { margin-bottom: 20px; }
         .nav-title { display: block; padding: 10px 14px; font-size: 11px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
@@ -693,6 +703,13 @@ export default function Home() {
         
         /* === MOBILE RESPONSIVENESS === */
         @media (max-width: 768px) {
+          /* Show close button on mobile */
+          .sidebar-close-btn {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+          }
+          
           /* Hide sidebar by default on mobile */
           .sidebar {
             position: fixed !important;
