@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { saveChat, getChats, deleteChat, newChatId } from '../lib/firebase';
+import Onboarding from '../components/Onboarding';
 
 const INDIAN_LANGUAGES = [
   { code: 'hi-IN', name: '\u0939\u093F\u0902\u0926\u0940', english: 'Hindi' },
@@ -324,6 +325,7 @@ export default function Home() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true); // Default true, will be adjusted on mount
   const [showLanguages, setShowLanguages] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false); // FTUX State
   const [selectedLang, setSelectedLang] = useState(INDIAN_LANGUAGES[0]);
   const [femaleVoice, setFemaleVoice] = useState(null);
   const [error, setError] = useState(null); // Debugging TTS
@@ -405,7 +407,27 @@ export default function Home() {
     if (typeof window !== 'undefined' && window.innerWidth <= 768) {
       setShowSidebar(false);
     }
+
+    // Check for First Time User
+    const hasSetup = localStorage.getItem('sakhi_setup_complete');
+    if (!hasSetup) {
+      setShowOnboarding(true);
+    } else {
+      // Restore saved language
+      const savedCode = localStorage.getItem('sakhi_lang_code');
+      if (savedCode) {
+        const found = INDIAN_LANGUAGES.find(l => l.code === savedCode);
+        if (found) setSelectedLang(found);
+      }
+    }
   }, []);
+
+  const handleOnboardingComplete = (lang) => {
+    setSelectedLang(lang);
+    setShowOnboarding(false);
+    localStorage.setItem('sakhi_setup_complete', 'true');
+    localStorage.setItem('sakhi_lang_code', lang.code);
+  };
 
   // Auto-save chat when messages change
   useEffect(() => {
@@ -508,10 +530,15 @@ export default function Home() {
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const audio = new Audio(url);
+
+      // Slow down speech slightly for better clarity
+      audio.playbackRate = 0.9;
       audioRef.current = audio;
 
       audio.onended = () => {
         setIsSpeaking(false);
+        setIsListening(false); // Ensure mic doesn't auto-start confusingly
+        URL.revokeObjectURL(url); // Cleanup
         // Execute redirect AFTER speech ends
         if (nav) {
           setTimeout(() => {
@@ -580,6 +607,12 @@ export default function Home() {
 
   return (
     <div className="app">
+      {showOnboarding && (
+        <Onboarding
+          languages={INDIAN_LANGUAGES}
+          onComplete={handleOnboardingComplete}
+        />
+      )}
       {error && (
         <div style={{ position: 'fixed', top: 20, left: '50%', transform: 'translateX(-50%)', background: '#ff4444', color: 'white', padding: '10px 20px', borderRadius: 20, zIndex: 2000, boxShadow: '0 5px 15px rgba(0,0,0,0.3)', cursor: 'pointer' }} onClick={() => setError(null)}>
           {error} ✕
