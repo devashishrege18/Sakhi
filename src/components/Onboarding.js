@@ -57,8 +57,8 @@ const styles = {
     langBtn: {
         padding: '16px',
         borderRadius: '16px',
-        border: '1px solid #e5e7eb',
-        background: 'white',
+        border: '1px solid #f0abfc', // Matches Tutorial Border
+        background: '#fdf4ff', // Lavender
         cursor: 'pointer',
         transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
         display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -85,10 +85,10 @@ const styles = {
         alignItems: 'center',
         marginBottom: '16px',
         textAlign: 'left',
-        background: 'white',
+        background: '#fdf4ff', // Lavender/Pink tint
         padding: '16px',
         borderRadius: '16px',
-        border: '1px solid #f3f4f6',
+        border: '1px solid #f0abfc', // Soft Purple/Pink border
         boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
     },
     stepIcon: {
@@ -137,6 +137,9 @@ export default function Onboarding({ languages, onComplete }) {
             <div style={styles.overlay}>
                 <div style={styles.card}>
                     <style>{`@keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }`}</style>
+
+                    <img src="/sakhi-logo.png" alt="Sakhi" style={{ width: '80px', height: 'auto', margin: '0 auto 20px', display: 'block' }} />
+
                     <h2 style={styles.title}>नमस्ते! 🙏</h2>
                     <p style={styles.subtitle}>
                         कृपया अपनी भाषा चुनें<br />
@@ -169,9 +172,8 @@ export default function Onboarding({ languages, onComplete }) {
         <div style={styles.overlay}>
             <div style={styles.card}>
                 <style>{`@keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }`}</style>
-                <div style={{ ...styles.stepIcon, margin: '0 auto 24px', width: '64px', height: '64px', fontSize: '28px', borderRadius: '20px' }}>
-                    ✨
-                </div>
+
+                <img src="/sakhi-logo.png" alt="Sakhi" style={{ width: '90px', height: 'auto', margin: '0 auto 24px', display: 'block' }} />
 
                 <h2 style={styles.title}>{t.welcome}</h2>
                 <p style={{ ...styles.subtitle, marginBottom: '32px' }}>Your AI Health Companion</p>
