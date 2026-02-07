@@ -189,26 +189,26 @@ const REDIRECT_TRANSLATIONS = {
 const VOICE_FEATURES = {
   hospitals: {
     keywords: [
-      // English
-      'hospital', 'clinic', 'emergency', 'ambulance', 'nearby', 'medical', 'urgent', 'pain', 'accident', 'blood', '108', '102',
+      // English - general hospital/clinic queries (NOT ambulance emergencies)
+      'hospital', 'clinic', 'nearby hospital', 'medical', 'checkup', 'health center',
       // Hindi
-      'अस्पताल', 'aspatal', 'dard', 'खून', 'emergency room', 'dawakhana', 'चिकित्सालय',
+      'अस्पताल', 'aspatal', 'dawakhana', 'चिकित्सालय', 'अस्पताल दिखाओ',
       // Bengali
-      'হাসপাতাল', 'বেদনা', 'জরুরি',
+      'হাসপাতাল', 'ক্লিনিক',
       // Telugu
-      'ఆసుపత్రి', 'నొప్పి', 'అత్యవసర',
+      'ఆసుపత్రి', 'క్లినిక్',
       // Tamil
-      'மருத்துவமனை', 'வலி', 'அவசரம்',
+      'மருத்துவமனை', 'கிளினிக்',
       // Marathi
-      'रुग्णालय', 'वेदना', 'आणीबाणी',
+      'रुग्णालय', 'दवाखाना',
       // Gujarati
-      'હોસ્પિટલ', 'દુખાવો',
+      'હોસ્પિટલ', 'દવાખાનું',
       // Kannada
-      'ಆಸ್ಪತ್ರೆ', 'ನೋವು',
+      'ಆಸ್ಪತ್ರೆ', 'ಚಿಕಿತ್ಸಾಲಯ',
       // Malayalam
-      'ആശുപത്രി', 'വേദന',
+      'ആശുപത്രി', 'ക്ലിനിക്',
       // Punjabi
-      'ਹਸਪਤਾਲ', 'ਦਰਦ'
+      'ਹਸਪਤਾਲ', 'ਕਲੀਨਿਕ'
     ],
     route: '/hospitals'
   },
