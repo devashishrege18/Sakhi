@@ -553,56 +553,25 @@ export default function Home() {
 
 
   const speakResponse = async (text, nav) => {
-    // Stop any existing audio or speech
+    // Stop any existing audio
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current = null;
     }
-    window.speechSynthesis?.cancel();
 
     setError(null);
 
-    // Google Cloud TTS - native Indian voices (PRIMARY)
-    const useGoogleTTS = async () => {
-      const res = await fetch('/api/google-tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, language: selectedLang.code }),
-      });
-
-      if (!res.ok) {
-        throw new Error('Google TTS failed');
-      }
-
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const audio = new Audio(url);
-      audio.playbackRate = 1.0;
-      audioRef.current = audio;
-
-      audio.onended = () => {
-        setIsSpeaking(false);
-        setIsListening(false);
-        URL.revokeObjectURL(url);
-        if (nav) {
-          setTimeout(() => { window.location.href = nav; }, 500);
-        }
-      };
-
-      setIsSpeaking(true);
-      await audio.play();
-    };
-
-    // ElevenLabs TTS - fallback
-    const useElevenLabsTTS = async () => {
+    try {
       const res = await fetch('/api/tts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, language: selectedLang.code }),
+        body: JSON.stringify({ text }),
       });
 
       if (!res.ok) {
-        throw new Error('ElevenLabs TTS failed');
+        let errMsg = 'TTS Request Failed';
+        try { const data = await res.json(); errMsg = data.error || errMsg; } catch (e) { }
+        throw new Error(errMsg);
       }
 
       const blob = await res.blob();
@@ -622,23 +591,13 @@ export default function Home() {
 
       setIsSpeaking(true);
       await audio.play();
-    };
-
-    try {
-      // Try Google Cloud TTS first (native Indian voices)
-      await useGoogleTTS();
-    } catch (googleError) {
-      console.log('Google TTS failed, trying ElevenLabs:', googleError.message);
-      try {
-        await useElevenLabsTTS();
-      } catch (elevenLabsError) {
-        console.error('All TTS failed:', elevenLabsError);
-        setError('Voice unavailable');
-        setIsSpeaking(false);
-        // Still navigate even if voice fails
-        if (nav) {
-          setTimeout(() => { window.location.href = nav; }, 500);
-        }
+    } catch (e) {
+      console.error('TTS error:', e);
+      setError('Audio Error: ' + e.message);
+      setIsSpeaking(false);
+      // Still navigate even if voice fails
+      if (nav) {
+        setTimeout(() => { window.location.href = nav; }, 500);
       }
     }
   };
