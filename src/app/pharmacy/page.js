@@ -1,6 +1,19 @@
 ﻿'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+
+const TRANSLATIONS = {
+  'hi-IN': { title: 'फार्मेसी', banner: 'महिलाओं के स्वास्थ्य की जरूरतें', bannerSub: 'भरोसेमंद उत्पाद • कैश ऑन डिलीवरी • ₹499+ पर मुफ्त शिपिंग', cartTitle: 'आपका कार्ट', cartEmpty: 'कार्ट खाली है', total: 'कुल', orderBtn: 'ऑर्डर करें (COD)', add: 'जोड़ें' },
+  'en-IN': { title: 'Pharmacy', banner: "Women's Health Essentials", bannerSub: 'Trusted products • Cash on Delivery • Free shipping above ₹499', cartTitle: 'Your Cart', cartEmpty: 'Your cart is empty', total: 'Total', orderBtn: 'Order Now (COD)', add: 'Add' },
+  'bn-IN': { title: 'ফার্মেসি', banner: 'মহিলাদের স্বাস্থ্য প্রয়োজনীয়তা', bannerSub: 'বিশ্বস্ত পণ্য • ক্যাশ অন ডেলিভারি • ₹499+ এ বিনামূল্যে শিপিং', cartTitle: 'আপনার কার্ট', cartEmpty: 'কার্ট খালি', total: 'মোট', orderBtn: 'অর্ডার করুন', add: 'যোগ করুন' },
+  'te-IN': { title: 'ఫార్మసీ', banner: 'మహిళల ఆరోగ్య అవసరాలు', bannerSub: 'నమ్మకమైన ఉత్పత్తులు • క్యాష్ ఆన్ డెలివరీ • ₹499+ పై ఉచిత షిప్పింగ్', cartTitle: 'మీ కార్ట్', cartEmpty: 'కార్ట్ ఖాళీగా ఉంది', total: 'మొత్తం', orderBtn: 'ఆర్డర్ చేయండి', add: 'జోడించు' },
+  'ta-IN': { title: 'மருந்தகம்', banner: 'பெண்கள் ஆரோக்கிய தேவைகள்', bannerSub: 'நம்பகமான பொருட்கள் • கேஷ் ஆன் டெலிவரி • ₹499+ இல் இலவச ஷிப்பிங்', cartTitle: 'உங்கள் கார்ட்', cartEmpty: 'கார்ட் காலியாக உள்ளது', total: 'மொத்தம்', orderBtn: 'ஆர்டர் செய்க', add: 'சேர்' },
+  'mr-IN': { title: 'फार्मसी', banner: 'महिलांच्या आरोग्याच्या गरजा', bannerSub: 'विश्वासार्ह उत्पादने • कॅश ऑन डिलिव्हरी • ₹499+ वर मोफत शिपिंग', cartTitle: 'तुमची कार्ट', cartEmpty: 'कार्ट रिकामी आहे', total: 'एकूण', orderBtn: 'ऑर्डर करा', add: 'जोडा' },
+  'gu-IN': { title: 'ફાર્મસી', banner: 'મહિલાઓના સ્વાસ્થ્ય જરૂરિયાતો', bannerSub: 'વિશ્વસનીય ઉત્પાદનો • કેશ ઓન ડિલિવરી • ₹499+ પર મફત શિપિંગ', cartTitle: 'તમારી કાર્ટ', cartEmpty: 'કાર્ટ ખાલી છે', total: 'કુલ', orderBtn: 'ઓર્ડર કરો', add: 'ઉમેરો' },
+  'kn-IN': { title: 'ಔಷಧಾಲಯ', banner: 'ಮಹಿಳೆಯರ ಆರೋಗ್ಯ ಅಗತ್ಯಗಳು', bannerSub: 'ವಿಶ್ವಾಸಾರ್ಹ ಉತ್ಪನ್ನಗಳು • ಕ್ಯಾಶ್ ಆನ್ ಡೆಲಿವರಿ • ₹499+ ಮೇಲೆ ಉಚಿತ ಶಿಪ್ಪಿಂಗ್', cartTitle: 'ನಿಮ್ಮ ಕಾರ್ಟ್', cartEmpty: 'ಕಾರ್ಟ್ ಖಾಲಿಯಾಗಿದೆ', total: 'ಒಟ್ಟು', orderBtn: 'ಆರ್ಡರ್ ಮಾಡಿ', add: 'ಸೇರಿಸಿ' },
+  'ml-IN': { title: 'ഫാർമസി', banner: 'സ്ത്രീ ആരോഗ്യ ആവശ്യങ്ങൾ', bannerSub: 'വിശ്വസനീയ ഉൽപ്പന്നങ്ങൾ • ക്യാഷ് ഓൺ ഡെലിവറി • ₹499+ ൽ സൗജന്യ ഷിപ്പിംഗ്', cartTitle: 'നിങ്ങളുടെ കാർട്ട്', cartEmpty: 'കാർട്ട് ശൂന്യമാണ്', total: 'ആകെ', orderBtn: 'ഓർഡർ ചെയ്യുക', add: 'ചേർക്കുക' },
+  'pa-IN': { title: 'ਫਾਰਮੇਸੀ', banner: 'ਔਰਤਾਂ ਦੀ ਸਿਹਤ ਲੋੜਾਂ', bannerSub: 'ਭਰੋਸੇਮੰਦ ਉਤਪਾਦ • ਕੈਸ਼ ਆਨ ਡਿਲੀਵਰੀ • ₹499+ ਤੇ ਮੁਫ਼ਤ ਸ਼ਿਪਿੰਗ', cartTitle: 'ਤੁਹਾਡੀ ਕਾਰਟ', cartEmpty: 'ਕਾਰਟ ਖਾਲੀ ਹੈ', total: 'ਕੁੱਲ', orderBtn: 'ਆਰਡਰ ਕਰੋ', add: 'ਜੋੜੋ' }
+};
 
 const CATEGORIES = ['All', 'Menstrual', 'Vitamins', 'Skincare', 'Wellness'];
 
@@ -20,6 +33,16 @@ export default function PharmacyPage() {
   const [selectedCat, setSelectedCat] = useState('All');
   const [cart, setCart] = useState([]);
   const [showCart, setShowCart] = useState(false);
+  const [lang, setLang] = useState('en-IN');
+
+  const t = TRANSLATIONS[lang] || TRANSLATIONS['en-IN'];
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedLang = localStorage.getItem('sakhi_lang_code');
+      if (savedLang && TRANSLATIONS[savedLang]) setLang(savedLang);
+    }
+  }, []);
 
   const filtered = selectedCat === 'All' ? PRODUCTS : PRODUCTS.filter(p => p.category === selectedCat);
   const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
@@ -106,14 +129,14 @@ export default function PharmacyPage() {
             <img src="/sakhi-logo.png" alt="Sakhi" className="logo-img" onError={(e) => e.target.style.display = 'none'} />
             <span className="logo-text">Sakhi</span>
           </Link>
-          <span className="page-title">Pharmacy</span>
+          <span className="page-title">{t.title}</span>
           <button className="cart-icon" onClick={() => setShowCart(true)}>🛒 {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}</button>
         </nav>
 
         <div className="pharm-content">
           <div className="pharm-banner">
-            <h2> Women's Health Essentials</h2>
-            <p>Trusted products  Cash on Delivery  Free shipping above ₹499</p>
+            <h2>{t.banner}</h2>
+            <p>{t.bannerSub}</p>
           </div>
 
           <div className="cat-row">
@@ -129,7 +152,7 @@ export default function PharmacyPage() {
                   <div className="prod-desc">{p.desc}</div>
                   <div className="prod-row">
                     <div><span className="prod-price">₹{p.price}</span><span className="prod-mrp">₹{p.mrp}</span></div>
-                    <button className="add-btn" onClick={() => addToCart(p)}>Add</button>
+                    <button className="add-btn" onClick={() => addToCart(p)}>{t.add}</button>
                   </div>
                 </div>
               </div>
@@ -140,8 +163,8 @@ export default function PharmacyPage() {
         {showCart && (
           <div className="cart-modal" onClick={() => setShowCart(false)}>
             <div className="cart-box" onClick={e => e.stopPropagation()}>
-              <div className="cart-head"><h3>Your Cart</h3><button className="close-x" onClick={() => setShowCart(false)}></button></div>
-              {cart.length === 0 ? <p style={{ textAlign: 'center', color: '#9CA3AF', padding: '30px' }}>Your cart is empty</p> : (
+              <div className="cart-head"><h3>{t.cartTitle}</h3><button className="close-x" onClick={() => setShowCart(false)}></button></div>
+              {cart.length === 0 ? <p style={{ textAlign: 'center', color: '#9CA3AF', padding: '30px' }}>{t.cartEmpty}</p> : (
                 <>
                   {cart.map(item => (
                     <div key={item.id} className="cart-item">
@@ -152,8 +175,8 @@ export default function PharmacyPage() {
                       </div>
                     </div>
                   ))}
-                  <div className="cart-total"><span>Total</span><span>₹{total}</span></div>
-                  <button className="order-btn"> Order Now (COD)</button>
+                  <div className="cart-total"><span>{t.total}</span><span>₹{total}</span></div>
+                  <button className="order-btn">{t.orderBtn}</button>
                 </>
               )}
             </div>

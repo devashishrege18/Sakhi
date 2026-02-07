@@ -1,5 +1,18 @@
 ﻿'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+const TRANSLATIONS = {
+  'hi-IN': { title: 'वेलनेस और डाइट टिप्स', subtitle: 'व्यक्तिगत स्वास्थ्य और पोषण मार्गदर्शन', backBtn: '← वापस', recommended: '✅ अनुशंसित खाद्य पदार्थ', avoid: '❌ परहेज करें', exercise: '🏃‍♀️ व्यायाम सुझाव', sakhiTip: '💡 साखी की टिप' },
+  'en-IN': { title: 'Wellness & Diet Tips', subtitle: 'Personalized health and nutrition guidance', backBtn: '← Back to Chat', recommended: '✅ Recommended Foods', avoid: '❌ Foods to Avoid', exercise: '🏃‍♀️ Exercise Recommendations', sakhiTip: '💡 Sakhi ka Tip' },
+  'bn-IN': { title: 'সুস্থতা ও ডায়েট টিপস', subtitle: 'ব্যক্তিগত স্বাস্থ্য ও পুষ্টি নির্দেশিকা', backBtn: '← ফিরুন', recommended: '✅ সুপারিশকৃত খাবার', avoid: '❌ এড়িয়ে চলুন', exercise: '🏃‍♀️ ব্যায়াম সুপারিশ', sakhiTip: '💡 সাখির টিপ' },
+  'te-IN': { title: 'వెల్‌నెస్ & డైట్ టిప్స్', subtitle: 'వ్యక్తిగత ఆరోగ్య మరియు పోషణ మార్గదర్శకత్వం', backBtn: '← వెనక్కి', recommended: '✅ సిఫార్సు చేసిన ఆహారాలు', avoid: '❌ నివారించాల్సినవి', exercise: '🏃‍♀️ వ్యాయామ సూచనలు', sakhiTip: '💡 సాఖి టిప్' },
+  'ta-IN': { title: 'ஆரோக்கியம் & உணவு குறிப்புகள்', subtitle: 'தனிப்பயன் சுகாதார வழிகாட்டுதல்', backBtn: '← பின்', recommended: '✅ பரிந்துரைக்கப்பட்ட உணவுகள்', avoid: '❌ தவிர்க்க வேண்டியவை', exercise: '🏃‍♀️ உடற்பயிற்சி பரிந்துரைகள்', sakhiTip: '💡 சாகி டிப்' },
+  'mr-IN': { title: 'वेलनेस आणि डाएट टिप्स', subtitle: 'वैयक्तिक आरोग्य आणि पोषण मार्गदर्शन', backBtn: '← मागे', recommended: '✅ शिफारस केलेले अन्न', avoid: '❌ टाळायचे', exercise: '🏃‍♀️ व्यायाम शिफारसी', sakhiTip: '💡 साखीची टिप' },
+  'gu-IN': { title: 'વેલનેસ અને ડાયેટ ટિપ્સ', subtitle: 'વ્યક્તિગત આરોગ્ય માર્ગદર્શન', backBtn: '← પાછા', recommended: '✅ ભલામણ કરેલ ખોરાક', avoid: '❌ ટાળવું', exercise: '🏃‍♀️ કસરત ભલામણો', sakhiTip: '💡 સાખી ટિપ' },
+  'kn-IN': { title: 'ಆರೋಗ್ಯ ಮತ್ತು ಆಹಾರ ಸಲಹೆಗಳು', subtitle: 'ವೈಯಕ್ತಿಕ ಆರೋಗ್ಯ ಮಾರ್ಗದರ್ಶನ', backBtn: '← ಹಿಂದೆ', recommended: '✅ ಶಿಫಾರಸು ಮಾಡಿದ ಆಹಾರಗಳು', avoid: '❌ ತಪ್ಪಿಸಬೇಕಾದವು', exercise: '🏃‍♀️ ವ್ಯಾಯಾಮ ಶಿಫಾರಸುಗಳು', sakhiTip: '💡 ಸಾಖಿ ಟಿಪ್' },
+  'ml-IN': { title: 'ആരോഗ്യവും ഡയറ്റ് ടിപ്പുകളും', subtitle: 'വ്യക്തിഗത ആരോഗ്യ മാർഗ്ഗനിർദ്ദേശം', backBtn: '← തിരികെ', recommended: '✅ ശുപാർശ ചെയ്ത ഭക്ഷണങ്ങൾ', avoid: '❌ ഒഴിവാക്കേണ്ടവ', exercise: '🏃‍♀️ വ്യായാമ ശുപാർശകൾ', sakhiTip: '💡 സാഖി ടിപ്പ്' },
+  'pa-IN': { title: 'ਵੈਲਨੈਸ ਅਤੇ ਡਾਈਟ ਟਿਪਸ', subtitle: 'ਨਿੱਜੀ ਸਿਹਤ ਮਾਰਗਦਰਸ਼ਨ', backBtn: '← ਪਿੱਛੇ', recommended: '✅ ਸਿਫ਼ਾਰਿਸ਼ੀ ਭੋਜਨ', avoid: '❌ ਪਰਹੇਜ਼', exercise: '🏃‍♀️ ਕਸਰਤ ਸਿਫ਼ਾਰਿਸ਼ਾਂ', sakhiTip: '💡 ਸਾਖੀ ਟਿਪ' }
+};
 
 const WELLNESS_TIPS = {
   pcos: {
@@ -38,7 +51,16 @@ const WELLNESS_TIPS = {
 
 export default function WellnessPage() {
   const [selected, setSelected] = useState('general');
+  const [lang, setLang] = useState('en-IN');
   const tip = WELLNESS_TIPS[selected];
+  const t = TRANSLATIONS[lang] || TRANSLATIONS['en-IN'];
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedLang = localStorage.getItem('sakhi_lang_code');
+      if (savedLang && TRANSLATIONS[savedLang]) setLang(savedLang);
+    }
+  }, []);
 
   return (
     <>
@@ -88,14 +110,14 @@ export default function WellnessPage() {
         <header className="wellness-header">
           <div className="header-left">
             <img src="/sakhi-logo.png" alt="Sakhi" />
-            <span>Wellness</span>
+            <span>{t.title}</span>
           </div>
-          <a href="/" className="back-btn">← Back to Chat</a>
+          <a href="/" className="back-btn">{t.backBtn}</a>
         </header>
 
         <div className="wellness-title">
-          <h1>🧘 Wellness & Diet Tips</h1>
-          <p>Personalized health and nutrition guidance</p>
+          <h1>🧘 {t.title}</h1>
+          <p>{t.subtitle}</p>
         </div>
 
         <div className="category-tabs">
@@ -115,28 +137,28 @@ export default function WellnessPage() {
             <h2 className="content-title">{tip.icon} {tip.title}</h2>
 
             <div className="section">
-              <h3 className="section-title green">✅ Recommended Foods</h3>
+              <h3 className="section-title green">{t.recommended}</h3>
               <ul>
                 {tip.diet.map((item, i) => <li key={i}>{item}</li>)}
               </ul>
             </div>
 
             <div className="section">
-              <h3 className="section-title red">❌ Foods to Avoid</h3>
+              <h3 className="section-title red">{t.avoid}</h3>
               <ul>
                 {tip.avoid.map((item, i) => <li key={i}>{item}</li>)}
               </ul>
             </div>
 
             <div className="section">
-              <h3 className="section-title purple">🏃‍♀️ Exercise Recommendations</h3>
+              <h3 className="section-title purple">{t.exercise}</h3>
               <ul>
                 {tip.exercise.map((item, i) => <li key={i}>{item}</li>)}
               </ul>
             </div>
 
             <div className="sakhi-tip">
-              <p>💡 Sakhi ka Tip: {tip.tips}</p>
+              <p>{t.sakhiTip}: {tip.tips}</p>
             </div>
           </div>
         </div>

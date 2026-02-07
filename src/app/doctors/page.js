@@ -1,5 +1,18 @@
 ﻿'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+const TRANSLATIONS = {
+  'hi-IN': { title: 'डॉक्टर से बात करें', subtitle: 'महिला स्वास्थ्य विशेषज्ञों से वीडियो कॉल पर परामर्श', backBtn: '← वापस', available: '🟢 अभी उपलब्ध', busy: '🔴 व्यस्त', startCall: '📹 कॉल शुरू करें', footer: '🔒 साखी उपयोगकर्ताओं के लिए मुफ्त परामर्श। कॉल प्राइवेट और सुरक्षित हैं।' },
+  'en-IN': { title: 'Talk to Doctor', subtitle: 'Consult with women health specialists via video call', backBtn: '← Back to Chat', available: '🟢 Available Now', busy: '🔴 Busy', startCall: '📹 Start Call', footer: '🔒 Free consultation for Sakhi users. Calls are private and secure.' },
+  'bn-IN': { title: 'ডাক্তারের সাথে কথা বলুন', subtitle: 'ভিডিও কলে মহিলা স্বাস্থ্য বিশেষজ্ঞদের সাথে পরামর্শ করুন', backBtn: '← ফিরুন', available: '🟢 এখন উপলব্ধ', busy: '🔴 ব্যস্ত', startCall: '📹 কল শুরু', footer: '🔒 সাখি ব্যবহারকারীদের জন্য বিনামূল্যে পরামর্শ।' },
+  'te-IN': { title: 'డాక్టర్‌తో మాట్లాడండి', subtitle: 'వీడియో కాల్ ద్వారా మహిళా ఆరోగ్య నిపుణులను సంప్రదించండి', backBtn: '← వెనక్కి', available: '🟢 ఇప్పుడు అందుబాటులో', busy: '🔴 బిజీ', startCall: '📹 కాల్ ప్రారంభించు', footer: '🔒 సాఖి వినియోగదారులకు ఉచిత సంప్రదింపు.' },
+  'ta-IN': { title: 'மருத்துவரிடம் பேசுங்கள்', subtitle: 'வீடியோ அழைப்பு மூலம் பெண்கள் சுகாதார நிபுணர்களை அணுகுங்கள்', backBtn: '← பின்', available: '🟢 இப்போது கிடைக்கும்', busy: '🔴 பிஸி', startCall: '📹 அழைப்பை தொடங்கு', footer: '🔒 சாகி பயனர்களுக்கு இலவச ஆலோசனை.' },
+  'mr-IN': { title: 'डॉक्टरांशी बोला', subtitle: 'व्हिडिओ कॉलद्वारे महिला आरोग्य तज्ञांशी सल्लामसलत करा', backBtn: '← मागे', available: '🟢 आता उपलब्ध', busy: '🔴 व्यस्त', startCall: '📹 कॉल सुरू करा', footer: '🔒 साखी वापरकर्त्यांसाठी मोफत सल्ला.' },
+  'gu-IN': { title: 'ડૉક્ટર સાથે વાત કરો', subtitle: 'વિડિયો કૉલ દ્વારા મહિલા આરોગ્ય નિષ્ણાતોની સલાહ લો', backBtn: '← પાછા', available: '🟢 હવે ઉપલબ્ધ', busy: '🔴 વ્યસ્ત', startCall: '📹 કૉલ શરૂ કરો', footer: '🔒 સાખી વપરાશકર્તાઓ માટે મફત સલાહ.' },
+  'kn-IN': { title: 'ವೈದ್ಯರೊಂದಿಗೆ ಮಾತನಾಡಿ', subtitle: 'ವೀಡಿಯೊ ಕರೆ ಮೂಲಕ ಮಹಿಳಾ ಆರೋಗ್ಯ ತಜ್ಞರನ್ನು ಸಂಪರ್ಕಿಸಿ', backBtn: '← ಹಿಂದೆ', available: '🟢 ಈಗ ಲಭ್ಯ', busy: '🔴 ಬ್ಯುಸಿ', startCall: '📹 ಕರೆ ಪ್ರಾರಂಭಿಸಿ', footer: '🔒 ಸಾಖಿ ಬಳಕೆದಾರರಿಗೆ ಉಚಿತ ಸಲಹೆ.' },
+  'ml-IN': { title: 'ഡോക്ടറുമായി സംസാരിക്കുക', subtitle: 'വീഡിയോ കോൾ വഴി വനിതാ ആരോഗ്യ വിദഗ്ധരെ സമീപിക്കുക', backBtn: '← തിരികെ', available: '🟢 ഇപ്പോൾ ലഭ്യമാണ്', busy: '🔴 ബിസി', startCall: '📹 കോൾ ആരംഭിക്കുക', footer: '🔒 സാഖി ഉപയോക്താക്കൾക്ക് സൗജന്യ കൺസൾട്ടേഷൻ.' },
+  'pa-IN': { title: 'ਡਾਕਟਰ ਨਾਲ ਗੱਲ ਕਰੋ', subtitle: 'ਵੀਡੀਓ ਕਾਲ ਰਾਹੀਂ ਮਹਿਲਾ ਸਿਹਤ ਮਾਹਿਰਾਂ ਨਾਲ ਸਲਾਹ ਲਓ', backBtn: '← ਪਿੱਛੇ', available: '🟢 ਹੁਣ ਉਪਲਬਧ', busy: '🔴 ਵਿਅਸਤ', startCall: '📹 ਕਾਲ ਸ਼ੁਰੂ ਕਰੋ', footer: '🔒 ਸਾਖੀ ਉਪਭੋਗਤਾਵਾਂ ਲਈ ਮੁਫ਼ਤ ਸਲਾਹ.' }
+};
 
 const DOCTORS = [
   { id: 1, name: 'Dr. Priya Sharma', specialty: 'Gynecologist', experience: '15 years', rating: 4.8, available: true, image: '👩‍⚕️' },
@@ -11,6 +24,16 @@ const DOCTORS = [
 export default function DoctorsPage() {
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [inCall, setInCall] = useState(false);
+  const [lang, setLang] = useState('en-IN');
+
+  const t = TRANSLATIONS[lang] || TRANSLATIONS['en-IN'];
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedLang = localStorage.getItem('sakhi_lang_code');
+      if (savedLang && TRANSLATIONS[savedLang]) setLang(savedLang);
+    }
+  }, []);
 
   const startCall = (doctor) => {
     setSelectedDoctor(doctor);
@@ -42,9 +65,9 @@ export default function DoctorsPage() {
           <header className="doctors-header">
             <div className="header-left">
               <img src="/sakhi-logo.png" alt="Sakhi" />
-              <span>Talk to Doctor</span>
+              <span>{t.title}</span>
             </div>
-            <a href="/" className="back-btn">← Back to Chat</a>
+            <a href="/" className="back-btn">{t.backBtn}</a>
           </header>
           <div className="call-container">
             <iframe
@@ -102,14 +125,14 @@ export default function DoctorsPage() {
         <header className="doctors-header">
           <div className="header-left">
             <img src="/sakhi-logo.png" alt="Sakhi" />
-            <span>Talk to Doctor</span>
+            <span>{t.title}</span>
           </div>
-          <a href="/" className="back-btn">← Back to Chat</a>
+          <a href="/" className="back-btn">{t.backBtn}</a>
         </header>
 
         <div className="doctors-title">
-          <h1>👩‍⚕️ Talk to Doctor</h1>
-          <p>Consult with women health specialists via video call</p>
+          <h1>👩‍⚕️ {t.title}</h1>
+          <p>{t.subtitle}</p>
         </div>
 
         <div className="doctors-grid">
@@ -128,14 +151,14 @@ export default function DoctorsPage() {
               </div>
               <div className="doctor-actions">
                 <span className={doc.available ? 'status-available' : 'status-busy'}>
-                  {doc.available ? '🟢 Available Now' : '🔴 Busy'}
+                  {doc.available ? t.available : t.busy}
                 </span>
                 <button
                   onClick={() => startCall(doc)}
                   disabled={!doc.available}
                   className="call-btn"
                 >
-                  📹 Start Call
+                  {t.startCall}
                 </button>
               </div>
             </div>
@@ -143,7 +166,7 @@ export default function DoctorsPage() {
         </div>
 
         <div className="doctors-footer">
-          <p>🔒 Free consultation for Sakhi users. Calls are private and secure.</p>
+          <p>{t.footer}</p>
         </div>
       </div>
     </>

@@ -1,10 +1,33 @@
 ﻿'use client';
 import { useState, useEffect } from 'react';
 
+const TRANSLATIONS = {
+  'hi-IN': { title: 'पास के अस्पताल', subtitle: 'अपने पास अस्पताल खोजें', backBtn: '← वापस', locating: 'स्थान खोज रहे हैं...', emergency: '🚨 आपातकालीन 108', ambulance: '🚑 एम्बुलेंस' },
+  'en-IN': { title: 'Nearby Hospitals', subtitle: 'Find hospitals and clinics near you', backBtn: '← Back to Chat', locating: 'Finding your location...', emergency: '🚨 Emergency 108', ambulance: '🚑 Ambulance' },
+  'bn-IN': { title: 'কাছের হাসপাতাল', subtitle: 'আপনার কাছে হাসপাতাল খুঁজুন', backBtn: '← ফিরুন', locating: 'অবস্থান খুঁজছি...', emergency: '🚨 জরুরি 108', ambulance: '🚑 অ্যাম্বুলেন্স' },
+  'te-IN': { title: 'సమీపంలోని ఆసుపత్రులు', subtitle: 'మీ సమీపంలో ఆసుపత్రులను కనుగొనండి', backBtn: '← వెనక్కి', locating: 'స్థానం గుర్తిస్తోంది...', emergency: '🚨 అత్యవసర 108', ambulance: '🚑 అంబులెన్స్' },
+  'ta-IN': { title: 'அருகிலுள்ள மருத்துவமனைகள்', subtitle: 'உங்களுக்கு அருகில் மருத்துவமனைகளைக் கண்டறியுங்கள்', backBtn: '← பின்', locating: 'இருப்பிடம் கண்டறிகிறது...', emergency: '🚨 அவசர 108', ambulance: '🚑 ஆம்புலன்ஸ்' },
+  'mr-IN': { title: 'जवळची रुग्णालये', subtitle: 'तुमच्या जवळची रुग्णालये शोधा', backBtn: '← मागे', locating: 'स्थान शोधत आहे...', emergency: '🚨 आणीबाणी 108', ambulance: '🚑 रुग्णवाहिका' },
+  'gu-IN': { title: 'નજીકની હોસ્પિટલો', subtitle: 'તમારી નજીકની હોસ્પિટલો શોધો', backBtn: '← પાછા', locating: 'સ્થાન શોધી રહ્યું છે...', emergency: '🚨 ઇમરજન્સી 108', ambulance: '🚑 એમ્બ્યુલન્સ' },
+  'kn-IN': { title: 'ಹತ್ತಿರದ ಆಸ್ಪತ್ರೆಗಳು', subtitle: 'ನಿಮ್ಮ ಹತ್ತಿರದ ಆಸ್ಪತ್ರೆಗಳನ್ನು ಹುಡುಕಿ', backBtn: '← ಹಿಂದೆ', locating: 'ಸ್ಥಳ ಹುಡುಕುತ್ತಿದೆ...', emergency: '🚨 ತುರ್ತು 108', ambulance: '🚑 ಆಂಬ್ಯುಲೆನ್ಸ್' },
+  'ml-IN': { title: 'അടുത്തുള്ള ആശുപത്രികൾ', subtitle: 'നിങ്ങളുടെ അടുത്തുള്ള ആശുപത്രികൾ കണ്ടെത്തുക', backBtn: '← തിരികെ', locating: 'സ്ഥാനം കണ്ടെത്തുന്നു...', emergency: '🚨 അടിയന്തര 108', ambulance: '🚑 ആംബുലൻസ്' },
+  'pa-IN': { title: 'ਨੇੜੇ ਦੇ ਹਸਪਤਾਲ', subtitle: 'ਆਪਣੇ ਨੇੜੇ ਹਸਪਤਾਲ ਲੱਭੋ', backBtn: '← ਪਿੱਛੇ', locating: 'ਟਿਕਾਣਾ ਲੱਭ ਰਹੇ ਹਾਂ...', emergency: '🚨 ਐਮਰਜੈਂਸੀ 108', ambulance: '🚑 ਐਂਬੂਲੈਂਸ' }
+};
+
 export default function HospitalsPage() {
   const [location, setLocation] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [lang, setLang] = useState('en-IN');
+
+  const t = TRANSLATIONS[lang] || TRANSLATIONS['en-IN'];
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedLang = localStorage.getItem('sakhi_lang_code');
+      if (savedLang && TRANSLATIONS[savedLang]) setLang(savedLang);
+    }
+  }, []);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -76,21 +99,21 @@ export default function HospitalsPage() {
         <header className="hospitals-header">
           <div className="header-left">
             <img src="/sakhi-logo.png" alt="Sakhi" />
-            <span>Nearby Hospitals</span>
+            <span>{t.title}</span>
           </div>
-          <a href="/" className="back-btn">← Back to Chat</a>
+          <a href="/" className="back-btn">{t.backBtn}</a>
         </header>
 
         <div className="hospitals-title">
-          <h1>🏥 Nearby Hospitals</h1>
-          <p>Find hospitals and clinics near you</p>
+          <h1>🏥 {t.title}</h1>
+          <p>{t.subtitle}</p>
           {error && <p className="error">{error}</p>}
         </div>
 
         <div className="map-container">
           {loading ? (
             <div className="map-loading">
-              <p>Loading map...</p>
+              <p>{t.locating}</p>
             </div>
           ) : (
             <iframe
@@ -104,8 +127,8 @@ export default function HospitalsPage() {
         </div>
 
         <div className="emergency-btns">
-          <a href="tel:108" className="emergency-btn red">🚨 Emergency 108</a>
-          <a href="tel:102" className="emergency-btn purple">🚑 Ambulance 102</a>
+          <a href="tel:108" className="emergency-btn red">{t.emergency}</a>
+          <a href="tel:102" className="emergency-btn purple">{t.ambulance}</a>
           <a href="tel:181" className="emergency-btn pink">📞 Women Helpline 181</a>
         </div>
       </div>
