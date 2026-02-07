@@ -1,14 +1,14 @@
 import { initializeApp, getApps } from 'firebase/app';
 import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, query, orderBy, limit } from 'firebase/firestore';
 
-// Firebase configuration - ALL values from environment variables
+// Firebase configuration
 const firebaseConfig = {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
+    apiKey: "AIzaSyB7lO6bGZ5rnLvJ4XnmgvQ-7wkye3vaVUc",
+    authDomain: "sakhi-9024e.firebaseapp.com",
+    projectId: "sakhi-9024e",
+    storageBucket: "sakhi-9024e.firebasestorage.app",
+    messagingSenderId: "165477207015",
+    appId: "1:165477207015:web:2b16bf2f69992666578b42"
 };
 
 // Initialize Firebase only once
