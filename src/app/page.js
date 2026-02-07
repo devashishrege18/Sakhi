@@ -553,22 +553,67 @@ export default function Home() {
 
 
   const speakResponse = async (text, nav) => {
-    // Stop any existing audio
+    // Stop any existing audio or speech
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current = null;
     }
-
-    // Convert generic language text to simply text for TTS
-    // (ElevenLabs Multilingual v2 auto-detects language from script)
+    window.speechSynthesis?.cancel();
 
     setError(null);
 
-    try {
+    // Try browser's native Web Speech API first (native Indian voices!)
+    const useBrowserTTS = () => {
+      return new Promise((resolve, reject) => {
+        if (!('speechSynthesis' in window)) {
+          reject(new Error('Browser TTS not supported'));
+          return;
+        }
+
+        const utterance = new SpeechSynthesisUtterance(text);
+
+        // Map language codes to browser voice names
+        const langCode = selectedLang.code;
+        utterance.lang = langCode;
+
+        // Find a matching voice for the language
+        const voices = window.speechSynthesis.getVoices();
+        const matchingVoice = voices.find(v => v.lang.startsWith(langCode.split('-')[0])) ||
+          voices.find(v => v.lang.includes('IN')) ||
+          null;
+
+        if (matchingVoice) {
+          utterance.voice = matchingVoice;
+        }
+
+        // Adjust speech settings for clarity
+        utterance.rate = 0.9;
+        utterance.pitch = 1.0;
+
+        utterance.onend = () => {
+          setIsSpeaking(false);
+          setIsListening(false);
+          if (nav) {
+            setTimeout(() => { window.location.href = nav; }, 500);
+          }
+          resolve();
+        };
+
+        utterance.onerror = (e) => {
+          reject(new Error('Browser TTS failed: ' + e.error));
+        };
+
+        setIsSpeaking(true);
+        window.speechSynthesis.speak(utterance);
+      });
+    };
+
+    // Fallback: ElevenLabs API
+    const useElevenLabsTTS = async () => {
       const res = await fetch('/api/tts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text, language: selectedLang.code }),
       });
 
       if (!res.ok) {
@@ -580,30 +625,34 @@ export default function Home() {
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const audio = new Audio(url);
-
-      // Slow down speech slightly for better clarity
       audio.playbackRate = 0.9;
       audioRef.current = audio;
 
       audio.onended = () => {
         setIsSpeaking(false);
-        setIsListening(false); // Ensure mic doesn't auto-start confusingly
-        URL.revokeObjectURL(url); // Cleanup
-        // Execute redirect AFTER speech ends
+        setIsListening(false);
+        URL.revokeObjectURL(url);
         if (nav) {
-          setTimeout(() => {
-            window.location.href = nav;
-          }, 500);
+          setTimeout(() => { window.location.href = nav; }, 500);
         }
       };
 
-      // Only show speaking visual when audio is actually ready to play
       setIsSpeaking(true);
       await audio.play();
-    } catch (e) {
-      console.error('ElevenLabs TTS error:', e);
-      setError('Audio Error: ' + e.message + '. (Check API Key)');
-      setIsSpeaking(false);
+    };
+
+    try {
+      // Try native browser TTS first for authentic Indian accents
+      await useBrowserTTS();
+    } catch (browserError) {
+      console.log('Browser TTS unavailable, using ElevenLabs:', browserError.message);
+      try {
+        await useElevenLabsTTS();
+      } catch (e) {
+        console.error('TTS error:', e);
+        setError('Audio Error: ' + e.message);
+        setIsSpeaking(false);
+      }
     }
   };
 
