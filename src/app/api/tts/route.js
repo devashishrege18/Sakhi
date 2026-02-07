@@ -13,9 +13,8 @@ export async function POST(req) {
             return NextResponse.json({ error: 'Text is required' }, { status: 400 });
         }
 
-        // Voice: "Ayesha" - Energetic Indian Female Voice, warm and charismatic
-        // ID verified from ElevenLabs voice library
-        const VOICE_ID = "0ZOhGcBopt9S6GBK8tnj"; // Ayesha - Female Indian voice
+        // Voice: "Rachel" - reliable multilingual voice
+        const VOICE_ID = "21m00Tcm4TlvDq8ikWAM";
 
         const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}?optimize_streaming_latency=4`, {
             method: "POST",
