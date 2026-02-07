@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 export async function POST(req) {
     try {
-        const { text } = await req.json();
+        const { text, language } = await req.json();
         const apiKey = process.env.ELEVENLABS_API_KEY;
 
         if (!apiKey) {
@@ -13,13 +13,27 @@ export async function POST(req) {
             return NextResponse.json({ error: 'Text is required' }, { status: 400 });
         }
 
-        // Voice ID: "Rachel" (American, Calm) - works well with Multilingual v2
-        // Alternative: "Sarah" or generic. Rachel: 21m00Tcm4TlvDq8ikWAM
-        const VOICE_ID = "21m00Tcm4TlvDq8ikWAM";
+        // Voice selection based on language for better native accent
+        // "Charlotte" - more neutral, works better with Indian languages
+        // "Aria" - expressive multilingual voice
+        // "Domi" - Young woman, warm tone
+        const VOICE_MAP = {
+            'hi-IN': 'XrExE9yKIg1WjnnlVkGX',  // Charlotte - works well with Hindi
+            'ta-IN': 'XrExE9yKIg1WjnnlVkGX',  // Charlotte
+            'te-IN': 'XrExE9yKIg1WjnnlVkGX',  // Charlotte
+            'bn-IN': 'XrExE9yKIg1WjnnlVkGX',  // Charlotte
+            'mr-IN': 'XrExE9yKIg1WjnnlVkGX',  // Charlotte
+            'gu-IN': 'XrExE9yKIg1WjnnlVkGX',  // Charlotte
+            'kn-IN': 'XrExE9yKIg1WjnnlVkGX',  // Charlotte
+            'ml-IN': 'XrExE9yKIg1WjnnlVkGX',  // Charlotte
+            'pa-IN': 'XrExE9yKIg1WjnnlVkGX',  // Charlotte
+            'en-IN': 'XrExE9yKIg1WjnnlVkGX',  // Charlotte
+        };
 
-        // Call ElevenLabs API with Latency Optimization
-        // optimize_streaming_latency=4 (Max speed)
-        const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}?optimize_streaming_latency=4`, {
+        const VOICE_ID = VOICE_MAP[language] || 'XrExE9yKIg1WjnnlVkGX'; // Charlotte as default
+
+        // Call ElevenLabs API with Multilingual v2 model
+        const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}?optimize_streaming_latency=3`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -27,10 +41,12 @@ export async function POST(req) {
             },
             body: JSON.stringify({
                 text: text,
-                model_id: "eleven_multilingual_v2", // Critical for Indian languages
+                model_id: "eleven_multilingual_v2", // Best for Indian languages
                 voice_settings: {
-                    stability: 0.5,
-                    similarity_boost: 0.5,
+                    stability: 0.65,         // Higher stability for clearer pronunciation
+                    similarity_boost: 0.75,   // Higher similarity for more natural voice
+                    style: 0.3,               // Slight expressiveness
+                    use_speaker_boost: true   // Improves clarity
                 },
             }),
         });
@@ -41,7 +57,7 @@ export async function POST(req) {
             return NextResponse.json({ error: 'TTS API error' }, { status: response.status });
         }
 
-        // Stream the audio directly to client (Pass-through)
+        // Stream the audio directly to client
         return new NextResponse(response.body, {
             headers: {
                 'Content-Type': 'audio/mpeg',

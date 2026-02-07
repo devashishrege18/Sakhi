@@ -13,7 +13,7 @@ const INDIAN_LANGUAGES = [
   { code: 'gu-IN', name: '\u0A97\u0AC1\u0A9C\u0AB0\u0ABE\u0AA4\u0AC0', english: 'Gujarati' },
   { code: 'kn-IN', name: '\u0C95\u0CA8\u0CCD\u0CA8\u0CA1', english: 'Kannada' },
   { code: 'ml-IN', name: '\u0D2E\u0D32\u0D2F\u0D3E\u0D33\u0D02', english: 'Malayalam' },
-  { code: 'pa-IN', name: '\u0A2A\u0A70\u0A1C\u0ABE\u0A2C\u0A40', english: 'Punjabi' },
+  { code: 'pa-IN', name: 'ਪੰਜਾਬੀ', english: 'Punjabi' },
   { code: 'en-IN', name: 'English', english: 'English' },
 ];
 
