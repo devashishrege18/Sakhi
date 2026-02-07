@@ -562,7 +562,38 @@ export default function Home() {
 
     setError(null);
 
-    // ElevenLabs TTS - primary method
+    // Google Cloud TTS - native Indian voices (PRIMARY)
+    const useGoogleTTS = async () => {
+      const res = await fetch('/api/google-tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, language: selectedLang.code }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Google TTS failed');
+      }
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      audio.playbackRate = 1.0;
+      audioRef.current = audio;
+
+      audio.onended = () => {
+        setIsSpeaking(false);
+        setIsListening(false);
+        URL.revokeObjectURL(url);
+        if (nav) {
+          setTimeout(() => { window.location.href = nav; }, 500);
+        }
+      };
+
+      setIsSpeaking(true);
+      await audio.play();
+    };
+
+    // ElevenLabs TTS - fallback
     const useElevenLabsTTS = async () => {
       const res = await fetch('/api/tts', {
         method: 'POST',
@@ -571,9 +602,7 @@ export default function Home() {
       });
 
       if (!res.ok) {
-        let errMsg = 'TTS Request Failed';
-        try { const data = await res.json(); errMsg = data.error || errMsg; } catch (e) { }
-        throw new Error(errMsg);
+        throw new Error('ElevenLabs TTS failed');
       }
 
       const blob = await res.blob();
@@ -595,54 +624,15 @@ export default function Home() {
       await audio.play();
     };
 
-    // Browser native TTS - fallback for when ElevenLabs fails
-    const useBrowserTTS = () => {
-      return new Promise((resolve, reject) => {
-        if (!('speechSynthesis' in window)) {
-          reject(new Error('Browser TTS not supported'));
-          return;
-        }
-
-        const utterance = new SpeechSynthesisUtterance(text);
-        const langCode = selectedLang.code;
-        utterance.lang = langCode;
-
-        const voices = window.speechSynthesis.getVoices();
-        const matchingVoice = voices.find(v => v.lang.startsWith(langCode.split('-')[0])) ||
-          voices.find(v => v.lang.includes('IN'));
-
-        if (matchingVoice) {
-          utterance.voice = matchingVoice;
-        }
-
-        utterance.rate = 0.9;
-        utterance.pitch = 1.0;
-
-        utterance.onend = () => {
-          setIsSpeaking(false);
-          setIsListening(false);
-          if (nav) {
-            setTimeout(() => { window.location.href = nav; }, 500);
-          }
-          resolve();
-        };
-
-        utterance.onerror = (e) => reject(new Error('Browser TTS failed'));
-
-        setIsSpeaking(true);
-        window.speechSynthesis.speak(utterance);
-      });
-    };
-
     try {
-      // Use ElevenLabs as primary TTS
-      await useElevenLabsTTS();
-    } catch (elevenLabsError) {
-      console.log('ElevenLabs failed, trying browser TTS:', elevenLabsError.message);
+      // Try Google Cloud TTS first (native Indian voices)
+      await useGoogleTTS();
+    } catch (googleError) {
+      console.log('Google TTS failed, trying ElevenLabs:', googleError.message);
       try {
-        await useBrowserTTS();
-      } catch (browserError) {
-        console.error('All TTS failed:', browserError);
+        await useElevenLabsTTS();
+      } catch (elevenLabsError) {
+        console.error('All TTS failed:', elevenLabsError);
         setError('Voice unavailable');
         setIsSpeaking(false);
         // Still navigate even if voice fails
