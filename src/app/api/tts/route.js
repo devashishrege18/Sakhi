@@ -13,8 +13,9 @@ export async function POST(req) {
             return NextResponse.json({ error: 'Text is required' }, { status: 400 });
         }
 
-        // Voice ID: "Rachel" - works well with Multilingual v2 for Indian languages
-        const VOICE_ID = "21m00Tcm4TlvDq8ikWAM";
+        // Voice: "Aisha" - friendly, empathetic Hindi voice, perfect for conversational health app
+        // Alternative: "Aria" for multilingual, or custom Indian voices
+        const VOICE_ID = "JBFqnCBsd6RMkjVDRZzb"; // Aisha - warm Indian voice
 
         const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}?optimize_streaming_latency=4`, {
             method: "POST",
