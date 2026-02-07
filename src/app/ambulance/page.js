@@ -34,13 +34,14 @@ export default function AmbulancePage() {
     const [lang, setLang] = useState('en-IN');
     const [progress, setProgress] = useState(0);
     const [arrived, setArrived] = useState(false);
-    const [ambulancePos, setAmbulancePos] = useState(null);
+    const [routeCoords, setRouteCoords] = useState([]); // Real road path coordinates
     const mapRef = useRef(null);
     const leafletMapRef = useRef(null);
     const ambulanceMarkerRef = useRef(null);
     const timerRef = useRef(null);
     const totalSecondsRef = useRef(0);
     const startTimeRef = useRef(null);
+    const currentRouteIndexRef = useRef(0);
 
     const t = TRANSLATIONS[lang] || TRANSLATIONS['en-IN'];
 
@@ -61,7 +62,6 @@ export default function AmbulancePage() {
                     const dist = 0.02 + Math.random() * 0.03;
                     const hospLoc = { lat: userLoc.lat + dist * Math.cos(angle), lng: userLoc.lng + dist * Math.sin(angle) };
                     setHospitalLocation(hospLoc);
-                    setAmbulancePos(hospLoc);
                     const distKm = getDistance(userLoc.lat, userLoc.lng, hospLoc.lat, hospLoc.lng);
                     const etaMins = calculateETA(distKm);
                     totalSecondsRef.current = etaMins * 60;
@@ -74,7 +74,6 @@ export default function AmbulancePage() {
                     const hospLoc = { lat: 28.6339, lng: 77.2290 };
                     setUserLocation(userLoc);
                     setHospitalLocation(hospLoc);
-                    setAmbulancePos(hospLoc);
                     totalSecondsRef.current = 8 * 60;
                     setEta({ mins: 8, secs: 0 });
                     startTimeRef.current = Date.now();
@@ -84,9 +83,31 @@ export default function AmbulancePage() {
         }
     }, []);
 
+    // Fetch real road route from OSRM
+    useEffect(() => {
+        if (!userLocation || !hospitalLocation) return;
+
+        const fetchRoute = async () => {
+            try {
+                const response = await fetch(
+                    `https://router.project-osrm.org/route/v1/driving/${hospitalLocation.lng},${hospitalLocation.lat};${userLocation.lng},${userLocation.lat}?overview=full&geometries=geojson`
+                );
+                const data = await response.json();
+                if (data.routes && data.routes[0]) {
+                    const coords = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]); // [lat, lng]
+                    setRouteCoords(coords);
+                }
+            } catch (error) {
+                // Fallback to straight line if OSRM fails
+                setRouteCoords([[hospitalLocation.lat, hospitalLocation.lng], [userLocation.lat, userLocation.lng]]);
+            }
+        };
+        fetchRoute();
+    }, [userLocation, hospitalLocation]);
+
     // Initialize Leaflet map
     useEffect(() => {
-        if (loading || !userLocation || !hospitalLocation || leafletMapRef.current) return;
+        if (loading || !userLocation || !hospitalLocation || leafletMapRef.current || routeCoords.length === 0) return;
 
         const initMap = async () => {
             const L = (await import('leaflet')).default;
@@ -111,7 +132,7 @@ export default function AmbulancePage() {
             });
             L.marker([userLocation.lat, userLocation.lng], { icon: userIcon }).addTo(map).bindPopup('📍 Your Location');
 
-            // Hospital marker (red)
+            // Hospital marker
             const hospIcon = L.divIcon({
                 html: '<div style="font-size:24px;">🏥</div>',
                 className: '',
@@ -120,36 +141,39 @@ export default function AmbulancePage() {
             });
             L.marker([hospitalLocation.lat, hospitalLocation.lng], { icon: hospIcon }).addTo(map).bindPopup('🏥 Hospital');
 
-            // Route line
-            L.polyline([[hospitalLocation.lat, hospitalLocation.lng], [userLocation.lat, userLocation.lng]], {
+            // Real road route polyline
+            L.polyline(routeCoords, {
                 color: '#dc2626',
-                weight: 4,
-                opacity: 0.8,
-                dashArray: '10, 10'
+                weight: 5,
+                opacity: 0.9
             }).addTo(map);
 
-            // Ambulance marker (animated)
+            // Fit map to show entire route
+            const bounds = L.latLngBounds(routeCoords);
+            map.fitBounds(bounds, { padding: [50, 50] });
+
+            // Ambulance marker
             const ambIcon = L.divIcon({
                 html: '<div style="font-size:32px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));animation:bounce 0.5s infinite alternate;">🚑</div>',
                 className: '',
                 iconSize: [40, 40],
                 iconAnchor: [20, 20]
             });
-            const ambMarker = L.marker([hospitalLocation.lat, hospitalLocation.lng], { icon: ambIcon }).addTo(map);
+            const ambMarker = L.marker(routeCoords[0], { icon: ambIcon }).addTo(map);
             ambulanceMarkerRef.current = ambMarker;
 
-            // Add keyframes for bounce
+            // Add keyframes
             const style = document.createElement('style');
             style.textContent = '@keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-5px); } }';
             document.head.appendChild(style);
         };
 
         initMap();
-    }, [loading, userLocation, hospitalLocation]);
+    }, [loading, userLocation, hospitalLocation, routeCoords]);
 
-    // Timer and ambulance movement
+    // Timer and ambulance movement along route
     useEffect(() => {
-        if (loading || arrived || !userLocation || !hospitalLocation) return;
+        if (loading || arrived || !userLocation || !hospitalLocation || routeCoords.length === 0) return;
 
         timerRef.current = setInterval(() => {
             const elapsed = (Date.now() - startTimeRef.current) / 1000;
@@ -159,13 +183,10 @@ export default function AmbulancePage() {
             setProgress(prog);
             setEta({ mins: Math.floor(remaining / 60), secs: Math.floor(remaining % 60) });
 
-            // Move ambulance on map
-            const newLat = hospitalLocation.lat + (userLocation.lat - hospitalLocation.lat) * (prog / 100);
-            const newLng = hospitalLocation.lng + (userLocation.lng - hospitalLocation.lng) * (prog / 100);
-            setAmbulancePos({ lat: newLat, lng: newLng });
-
-            if (ambulanceMarkerRef.current) {
-                ambulanceMarkerRef.current.setLatLng([newLat, newLng]);
+            // Calculate which point on the route to show
+            const routeIndex = Math.floor((prog / 100) * (routeCoords.length - 1));
+            if (ambulanceMarkerRef.current && routeCoords[routeIndex]) {
+                ambulanceMarkerRef.current.setLatLng(routeCoords[routeIndex]);
             }
 
             if (remaining <= 0) {
@@ -178,7 +199,7 @@ export default function AmbulancePage() {
         }, 1000);
 
         return () => clearInterval(timerRef.current);
-    }, [loading, arrived, userLocation, hospitalLocation]);
+    }, [loading, arrived, userLocation, hospitalLocation, routeCoords]);
 
     return (
         <>
@@ -203,14 +224,14 @@ export default function AmbulancePage() {
         .amb-eta-label { font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 1px; }
         .amb-eta-time { font-size: 52px; font-weight: 800; background: linear-gradient(135deg, #dc2626, #be185d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family: 'SF Mono', monospace; margin: 8px 0; }
         .amb-eta-mins { font-size: 14px; color: #6b7280; }
-        .amb-track-visual { margin-top: 20px; padding: 16px; background: linear-gradient(135deg, #f3e8ff, #fdf4ff); border-radius: 12px; }
+        .amb-track-visual { margin-top: 20px; padding: 16px; padding-bottom: 24px; background: linear-gradient(135deg, #f3e8ff, #fdf4ff); border-radius: 12px; }
         .amb-track-label { font-size: 11px; color: #7c3aed; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
         .amb-track-label::before { content: ''; width: 8px; height: 8px; background: #22c55e; border-radius: 50%; animation: blink 1s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-        .amb-track-bar { position: relative; height: 8px; background: #e5e7eb; border-radius: 4px; }
+        .amb-track-bar { position: relative; height: 8px; background: #e5e7eb; border-radius: 4px; margin-bottom: 20px; }
         .amb-track-fill { height: 100%; background: linear-gradient(90deg, #22c55e, #16a34a); border-radius: 4px; transition: width 1s linear; }
-        .amb-track-icon { position: absolute; top: -14px; transform: translateX(-50%); font-size: 28px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); transition: left 1s linear; }
-        .amb-track-points { display: flex; justify-content: space-between; margin-top: 8px; font-size: 10px; color: #6b7280; }
+        .amb-track-icon { position: absolute; top: -12px; transform: translateX(-50%); font-size: 24px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); transition: left 1s linear; }
+        .amb-track-points { display: flex; justify-content: space-between; font-size: 10px; color: #6b7280; }
         .amb-driver { display: flex; align-items: center; gap: 12px; padding: 14px; background: rgba(124,58,237,0.1); border-radius: 12px; margin-top: 16px; }
         .amb-driver-avatar { width: 44px; height: 44px; background: linear-gradient(135deg, #a855f7, #ec4899); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; }
         .amb-driver-info h4 { font-size: 13px; font-weight: 600; color: #1f2937; }
