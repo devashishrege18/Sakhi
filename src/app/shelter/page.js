@@ -2,16 +2,50 @@
 import { useState, useEffect } from 'react';
 
 const TRANSLATIONS = {
-    'hi-IN': { title: 'सुरक्षित आश्रय', subtitle: 'घरेलू हिंसा से सुरक्षा', backBtn: '← वापस', youAreSafe: 'आप सुरक्षित हैं', helpOnWay: 'मदद आ रही है', quickConnect: 'तुरंत कॉल करें', womenHelpline: '👩 181', police: '🚔 100', womenCell: '👮‍♀️ 1091', ncw: '🏛️ NCW', nearbyHelp: 'नजदीकी पुलिस थाना', safetyTips: '💡 सुरक्षा सुझाव', tip1: '✓ सुरक्षित स्थान पर जाएं', tip2: '✓ किसी विश्वसनीय को बताएं', tip3: '✓ दस्तावेज़ साथ रखें', locating: 'स्थान खोज रहे हैं...' },
-    'en-IN': { title: 'Safe Shelter', subtitle: 'Protection from domestic violence', backBtn: '← Back', youAreSafe: 'You Are Protected', helpOnWay: 'Help is coming', quickConnect: 'Quick Call', womenHelpline: '👩 181', police: '🚔 100', womenCell: '👮‍♀️ 1091', ncw: '🏛️ NCW', nearbyHelp: 'Nearby Police Station', safetyTips: '💡 Safety Tips', tip1: '✓ Move to a safe location', tip2: '✓ Inform someone you trust', tip3: '✓ Keep documents ready', locating: 'Finding your location...' },
-    'bn-IN': { title: 'নিরাপদ আশ্রয়', backBtn: '← ফিরুন', youAreSafe: 'আপনি সুরক্ষিত', helpOnWay: 'সাহায্য আসছে', quickConnect: 'দ্রুত কল', womenHelpline: '👩 181', police: '🚔 100', womenCell: '👮‍♀️ 1091', ncw: '🏛️ NCW', nearbyHelp: 'কাছের থানা', safetyTips: '💡 নিরাপত্তা', tip1: '✓ নিরাপদ স্থানে যান', tip2: '✓ বিশ্বস্তকে জানান', tip3: '✓ নথি রাখুন', locating: 'অবস্থান...' },
-    'te-IN': { title: 'సురక్షిత ఆశ్రయం', backBtn: '← వెనక్కి', youAreSafe: 'మీరు సురక్షితం', helpOnWay: 'సహాయం వస్తోంది', quickConnect: 'త్వరిత కాల్', womenHelpline: '👩 181', police: '🚔 100', womenCell: '👮‍♀️ 1091', ncw: '🏛️ NCW', nearbyHelp: 'దగ్గరి పోలీస్ స్టేషన్', safetyTips: '💡 భద్రత', tip1: '✓ సురక్షిత చోటికి వెళ్ళండి', tip2: '✓ నమ్మకమైన వారికి చెప్పండి', tip3: '✓ పత్రాలు ఉంచండి', locating: 'స్థానం...' },
-    'ta-IN': { title: 'பாதுகாப்பு', backBtn: '← பின்', youAreSafe: 'பாதுகாப்பாக', helpOnWay: 'உதவி வருகிறது', quickConnect: 'விரைவு கால்', womenHelpline: '👩 181', police: '🚔 100', womenCell: '👮‍♀️ 1091', ncw: '🏛️ NCW', nearbyHelp: 'அருகில் காவல் நிலையம்', safetyTips: '💡 பாதுகாப்பு', tip1: '✓ பாதுகாப்பான இடம்', tip2: '✓ நம்பகமானவரிடம்', tip3: '✓ ஆவணங்கள்', locating: 'இருப்பிடம்...' },
-    'mr-IN': { title: 'सुरक्षित आश्रय', backBtn: '← मागे', youAreSafe: 'तुम्ही सुरक्षित', helpOnWay: 'मदत येत आहे', quickConnect: 'त्वरित कॉल', womenHelpline: '👩 181', police: '🚔 100', womenCell: '👮‍♀️ 1091', ncw: '🏛️ NCW', nearbyHelp: 'जवळचे पोलिस ठाणे', safetyTips: '💡 सुरक्षितता', tip1: '✓ सुरक्षित ठिकाणी जा', tip2: '✓ विश्वासू व्यक्तीला सांगा', tip3: '✓ कागदपत्रे', locating: 'स्थान...' },
-    'gu-IN': { title: 'સુરક્ષિત આશ્રય', backBtn: '← પાછા', youAreSafe: 'તમે સુરક્ષિત', helpOnWay: 'મદદ આવે છે', quickConnect: 'ઝડપી કૉલ', womenHelpline: '👩 181', police: '🚔 100', womenCell: '👮‍♀️ 1091', ncw: '🏛️ NCW', nearbyHelp: 'નજીકનું પોલીસ સ્ટેશન', safetyTips: '💡 સુરક્ષા', tip1: '✓ સુરક્ષિત સ્થળે જાઓ', tip2: '✓ વિશ્વાસુને જણાવો', tip3: '✓ દસ્તાવેજો', locating: 'સ્થાન...' },
-    'kn-IN': { title: 'ಸುರಕ್ಷಿತ ಆಶ್ರಯ', backBtn: '← ಹಿಂದೆ', youAreSafe: 'ನೀವು ಸುರಕ್ಷಿತ', helpOnWay: 'ಸಹಾಯ ಬರುತ್ತಿದೆ', quickConnect: 'ತ್ವರಿತ ಕರೆ', womenHelpline: '👩 181', police: '🚔 100', womenCell: '👮‍♀️ 1091', ncw: '🏛️ NCW', nearbyHelp: 'ಹತ್ತಿರದ ಪೊಲೀಸ್ ಠಾಣೆ', safetyTips: '💡 ಸುರಕ್ಷತೆ', tip1: '✓ ಸುರಕ್ಷಿತ ಸ್ಥಳಕ್ಕೆ ಹೋಗಿ', tip2: '✓ ನಂಬಿಕಸ್ಥರಿಗೆ ತಿಳಿಸಿ', tip3: '✓ ದಾಖಲೆಗಳು', locating: 'ಸ್ಥಳ...' },
-    'ml-IN': { title: 'സുരക്ഷിത അഭയം', backBtn: '← തിരികെ', youAreSafe: 'നിങ്ങൾ സുരക്ഷിതം', helpOnWay: 'സഹായം വരുന്നു', quickConnect: 'ദ്രുത കോൾ', womenHelpline: '👩 181', police: '🚔 100', womenCell: '👮‍♀️ 1091', ncw: '🏛️ NCW', nearbyHelp: 'അടുത്തുള്ള പോലീസ് സ്റ്റേഷൻ', safetyTips: '💡 സുരക്ഷ', tip1: '✓ സുരക്ഷിത സ്ഥലത്തേക്ക്', tip2: '✓ വിശ്വസ്തരെ അറിയിക്കുക', tip3: '✓ രേഖകൾ', locating: 'സ്ഥാനം...' },
-    'pa-IN': { title: 'ਸੁਰੱਖਿਅਤ ਆਸਰਾ', backBtn: '← ਪਿੱਛੇ', youAreSafe: 'ਤੁਸੀਂ ਸੁਰੱਖਿਅਤ', helpOnWay: 'ਮਦਦ ਆ ਰਹੀ', quickConnect: 'ਤੁਰੰਤ ਕੌਲ', womenHelpline: '👩 181', police: '🚔 100', womenCell: '👮‍♀️ 1091', ncw: '🏛️ NCW', nearbyHelp: 'ਨੇੜਲਾ ਥਾਣਾ', safetyTips: '💡 ਸੁਰੱਖਿਆ', tip1: '✓ ਸੁਰੱਖਿਅਤ ਥਾਂ ਜਾਓ', tip2: '✓ ਭਰੋਸੇਯੋਗ ਨੂੰ ਦੱਸੋ', tip3: '✓ ਦਸਤਾਵੇਜ਼', locating: 'ਟਿਕਾਣਾ...' }
+    'hi-IN': {
+        title: 'सुरक्षित आश्रय',
+        subtitle: 'घरेलू हिंसा से तत्काल सुरक्षा',
+        backBtn: '← वापस जाएं',
+        youAreSafe: 'आप सुरक्षित हैं',
+        helpOnWay: 'मदद आ रही है...',
+        quickConnect: 'तुरंत जुड़ें',
+        womenHelpline: '👩 महिला हेल्पलाइन 181',
+        police: '🚔 पुलिस 100',
+        womenCell: '👮‍♀️ महिला सुरक्षा 1091',
+        ncw: '🏛️ राष्ट्रीय महिला आयोग',
+        nearbyHelp: 'नजदीकी पुलिस थाना',
+        safetyTips: '💡 सुरक्षा सुझाव',
+        tip1: '✓ सुरक्षित स्थान पर जाएं',
+        tip2: '✓ किसी विश्वसनीय को बताएं',
+        tip3: '✓ ज़रूरी दस्तावेज़ साथ रखें',
+        locating: 'स्थान खोज रहे हैं...'
+    },
+    'en-IN': {
+        title: 'Safe Shelter',
+        subtitle: 'Immediate protection from domestic violence',
+        backBtn: '← Back to Chat',
+        youAreSafe: 'You Are Protected',
+        helpOnWay: 'Help is on the way...',
+        quickConnect: 'Direct Connect',
+        womenHelpline: '👩 Women Helpline 181',
+        police: '🚔 Police 100',
+        womenCell: '👮‍♀️ Women Cell 1091',
+        ncw: '🏛️ National Commission for Women',
+        nearbyHelp: 'Nearby Police Stations',
+        safetyTips: '💡 Safety Tips',
+        tip1: '✓ Move to a safe location',
+        tip2: '✓ Inform someone you trust',
+        tip3: '✓ Keep important documents ready',
+        locating: 'Finding your location...'
+    },
+    'bn-IN': { title: 'নিরাপদ আশ্রয়', subtitle: 'পারিবারিক সহিংসতা থেকে সুরক্ষা', backBtn: '← ফিরে যান', youAreSafe: 'আপনি সুরক্ষিত', helpOnWay: 'সাহায্য আসছে...', quickConnect: 'সরাসরি যোগাযোগ', womenHelpline: '👩 মহিলা হেল্পলাইন 181', police: '🚔 পুলিশ 100', womenCell: '👮‍♀️ মহিলা সেল 1091', ncw: '🏛️ জাতীয় মহিলা কমিশন', nearbyHelp: 'কাছের থানা', safetyTips: '💡 নিরাপত্তা পরামর্শ', tip1: '✓ নিরাপদ স্থানে যান', tip2: '✓ বিশ্বস্ত কাউকে জানান', tip3: '✓ গুরুত্বপূর্ণ নথি রাখুন', locating: 'অবস্থান খুঁজছি...' },
+    'te-IN': { title: 'సురక్షిత ఆశ్రయం', subtitle: 'గృహ హింస నుండి రక్షణ', backBtn: '← వెనక్కి', youAreSafe: 'మీరు సురక్షితం', helpOnWay: 'సహాయం వస్తోంది...', quickConnect: 'నేరుగా కనెక్ట్', womenHelpline: '👩 మహిళా హెల్ప్‌లైన్ 181', police: '🚔 పోలీసు 100', womenCell: '👮‍♀️ మహిళా సెల్ 1091', ncw: '🏛️ జాతీయ మహిళా కమిషన్', nearbyHelp: 'దగ్గరి పోలీస్ స్టేషన్', safetyTips: '💡 భద్రతా చిట్కాలు', tip1: '✓ సురక్షిత ప్రదేశానికి వెళ్ళండి', tip2: '✓ నమ్మకమైన వారికి చెప్పండి', tip3: '✓ పత్రాలు సిద్ధంగా ఉంచండి', locating: 'స్థానం గుర్తిస్తోంది...' },
+    'ta-IN': { title: 'பாதுகாப்பான தங்குமிடம்', subtitle: 'குடும்ப வன்முறையிலிருந்து பாதுகாப்பு', backBtn: '← பின் செல்', youAreSafe: 'நீங்கள் பாதுகாப்பாக இருக்கிறீர்கள்', helpOnWay: 'உதவி வருகிறது...', quickConnect: 'நேரடி இணைப்பு', womenHelpline: '👩 பெண்கள் ஹெல்ப்லைன் 181', police: '🚔 காவல் 100', womenCell: '👮‍♀️ பெண்கள் பிரிவு 1091', ncw: '🏛️ தேசிய பெண்கள் ஆணையம்', nearbyHelp: 'அருகிலுள்ள காவல் நிலையம்', safetyTips: '💡 பாதுகாப்பு குறிப்புகள்', tip1: '✓ பாதுகாப்பான இடத்திற்குச் செல்லுங்கள்', tip2: '✓ நம்பகமானவர்களிடம் சொல்லுங்கள்', tip3: '✓ ஆவணங்களை தயாராக வைக்கவும்', locating: 'இருப்பிடம் கண்டறிகிறது...' },
+    'mr-IN': { title: 'सुरक्षित आश्रय', subtitle: 'घरगुती हिंसाचारापासून संरक्षण', backBtn: '← मागे जा', youAreSafe: 'तुम्ही सुरक्षित आहात', helpOnWay: 'मदत येत आहे...', quickConnect: 'थेट कनेक्ट', womenHelpline: '👩 महिला हेल्पलाइन 181', police: '🚔 पोलिस 100', womenCell: '👮‍♀️ महिला सेल 1091', ncw: '🏛️ राष्ट्रीय महिला आयोग', nearbyHelp: 'जवळचे पोलिस ठाणे', safetyTips: '💡 सुरक्षितता टिप्स', tip1: '✓ सुरक्षित ठिकाणी जा', tip2: '✓ विश्वासू व्यक्तीला सांगा', tip3: '✓ कागदपत्रे तयार ठेवा', locating: 'स्थान शोधत आहे...' },
+    'gu-IN': { title: 'સુરક્ષિત આશ્રય', subtitle: 'ઘરેલું હિંસાથી સુરક્ષા', backBtn: '← પાછા જાઓ', youAreSafe: 'તમે સુરક્ષિત છો', helpOnWay: 'મદદ આવી રહી છે...', quickConnect: 'સીધું કનેક્ટ', womenHelpline: '👩 મહિલા હેલ્પલાઇન 181', police: '🚔 પોલીસ 100', womenCell: '👮‍♀️ મહિલા સેલ 1091', ncw: '🏛️ રાષ્ટ્રીય મહિલા આયોગ', nearbyHelp: 'નજીકનું પોલીસ સ્ટેશન', safetyTips: '💡 સુરક્ષા ટિપ્સ', tip1: '✓ સુરક્ષિત સ્થળે જાઓ', tip2: '✓ વિશ્વાસુને જણાવો', tip3: '✓ દસ્તાવેજો તૈયાર રાખો', locating: 'સ્થાન શોધી રહ્યું છે...' },
+    'kn-IN': { title: 'ಸುರಕ್ಷಿತ ಆಶ್ರಯ', subtitle: 'ಗೃಹ ಹಿಂಸೆಯಿಂದ ರಕ್ಷಣೆ', backBtn: '← ಹಿಂದೆ', youAreSafe: 'ನೀವು ಸುರಕ್ಷಿತ', helpOnWay: 'ಸಹಾಯ ಬರುತ್ತಿದೆ...', quickConnect: 'ನೇರ ಸಂಪರ್ಕ', womenHelpline: '👩 ಮಹಿಳಾ ಹೆಲ್ಪ್‌ಲೈನ್ 181', police: '🚔 ಪೊಲೀಸ್ 100', womenCell: '👮‍♀️ ಮಹಿಳಾ ಕೋಶ 1091', ncw: '🏛️ ರಾಷ್ಟ್ರೀಯ ಮಹಿಳಾ ಆಯೋಗ', nearbyHelp: 'ಹತ್ತಿರದ ಪೊಲೀಸ್ ಠಾಣೆ', safetyTips: '💡 ಸುರಕ್ಷತಾ ಸಲಹೆಗಳು', tip1: '✓ ಸುರಕ್ಷಿತ ಸ್ಥಳಕ್ಕೆ ಹೋಗಿ', tip2: '✓ ನಂಬಿಕಸ್ಥರಿಗೆ ತಿಳಿಸಿ', tip3: '✓ ದಾಖಲೆಗಳನ್ನು ಸಿದ್ಧವಾಗಿಡಿ', locating: 'ಸ್ಥಳ ಹುಡುಕುತ್ತಿದೆ...' },
+    'ml-IN': { title: 'സുരക്ഷിത അഭയകേന്ദ്രം', subtitle: 'ഗാർഹിക പീഡനത്തിൽ നിന്ന് സംരക്ഷണം', backBtn: '← തിരികെ', youAreSafe: 'നിങ്ങൾ സുരക്ഷിതം', helpOnWay: 'സഹായം വരുന്നു...', quickConnect: 'നേരിട്ട് ബന്ധപ്പെടുക', womenHelpline: '👩 വനിതാ ഹെൽപ്പ്‌ലൈൻ 181', police: '🚔 പോലീസ് 100', womenCell: '👮‍♀️ വനിതാ സെൽ 1091', ncw: '🏛️ ദേശീയ വനിതാ കമ്മീഷൻ', nearbyHelp: 'അടുത്തുള്ള പോലീസ് സ്റ്റേഷൻ', safetyTips: '💡 സുരക്ഷാ നിർദ്ദേശങ്ങൾ', tip1: '✓ സുരക്ഷിത സ്ഥലത്തേക്ക് പോകുക', tip2: '✓ വിശ്വസ്തരെ അറിയിക്കുക', tip3: '✓ രേഖകൾ തയ്യാറാക്കുക', locating: 'സ്ഥാനം കണ്ടെത്തുന്നു...' },
+    'pa-IN': { title: 'ਸੁਰੱਖਿਅਤ ਆਸਰਾ', subtitle: 'ਘਰੇਲੂ ਹਿੰਸਾ ਤੋਂ ਸੁਰੱਖਿਆ', backBtn: '← ਪਿੱਛੇ ਜਾਓ', youAreSafe: 'ਤੁਸੀਂ ਸੁਰੱਖਿਅਤ ਹੋ', helpOnWay: 'ਮਦਦ ਆ ਰਹੀ ਹੈ...', quickConnect: 'ਸਿੱਧਾ ਕਨੈਕਟ', womenHelpline: '👩 ਮਹਿਲਾ ਹੈਲਪਲਾਈਨ 181', police: '🚔 ਪੁਲਿਸ 100', womenCell: '👮‍♀️ ਮਹਿਲਾ ਸੈੱਲ 1091', ncw: '🏛️ ਰਾਸ਼ਟਰੀ ਮਹਿਲਾ ਕਮਿਸ਼ਨ', nearbyHelp: 'ਨੇੜਲਾ ਪੁਲਿਸ ਥਾਣਾ', safetyTips: '💡 ਸੁਰੱਖਿਆ ਸੁਝਾਅ', tip1: '✓ ਸੁਰੱਖਿਅਤ ਥਾਂ ਤੇ ਜਾਓ', tip2: '✓ ਭਰੋਸੇਯੋਗ ਨੂੰ ਦੱਸੋ', tip3: '✓ ਦਸਤਾਵੇਜ਼ ਤਿਆਰ ਰੱਖੋ', locating: 'ਟਿਕਾਣਾ ਲੱਭ ਰਹੇ ਹਾਂ...' }
 };
 
 export default function ShelterPage() {
@@ -37,106 +71,107 @@ export default function ShelterPage() {
         } else { setLocation({ lat: 28.6139, lng: 77.2090 }); setLoading(false); }
     }, []);
 
-    // Optimized search: ONLY police stations (most reliable for protection)
+    // Police stations search
     const mapUrl = location ? `https://www.google.com/maps/embed/v1/search?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=police+station&center=${location.lat},${location.lng}&zoom=14` : null;
 
     return (
         <>
             <style jsx global>{`
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        .shltr-page { min-height: 100vh; background: linear-gradient(135deg, #f3e8ff 0%, #fdf4ff 50%, #fce7f3 100%); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        .shelter-page { min-height: 100vh; background: linear-gradient(135deg, #f3e8ff 0%, #fdf4ff 50%, #fce7f3 100%); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
         
-        .shltr-header { background: linear-gradient(135deg, #7c3aed, #db2777); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; }
-        .shltr-header-left { display: flex; align-items: center; gap: 10px; }
-        .shltr-header-left img { height: 36px; }
-        .shltr-header-left span { color: white; font-size: 17px; font-weight: 700; }
-        .shltr-back { background: rgba(255,255,255,0.2); color: white; padding: 8px 14px; border-radius: 10px; text-decoration: none; font-size: 13px; }
+        .shelter-header { background: linear-gradient(135deg, #7c3aed, #db2777); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+        .shelter-header-left { display: flex; align-items: center; gap: 12px; }
+        .shelter-header-left img { height: 40px; }
+        .shelter-header-left span { color: white; font-size: 18px; font-weight: 700; }
+        .shelter-back { background: rgba(255,255,255,0.2); color: white; padding: 8px 16px; border-radius: 12px; text-decoration: none; font-size: 14px; backdrop-filter: blur(10px); }
         
-        .shltr-content { display: flex; gap: 20px; padding: 20px; max-width: 1400px; margin: 0 auto; }
-        .shltr-sidebar { width: 320px; display: flex; flex-direction: column; gap: 16px; }
+        .shelter-content { display: flex; gap: 24px; padding: 24px; max-width: 1400px; margin: 0 auto; }
         
-        .shltr-card { background: rgba(255,255,255,0.9); backdrop-filter: blur(20px); border-radius: 20px; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.08); border: 1px solid rgba(255,255,255,0.5); }
+        .shelter-sidebar { width: 380px; display: flex; flex-direction: column; gap: 20px; }
         
-        .shltr-safe { background: linear-gradient(135deg, #059669, #10b981); border-radius: 16px; padding: 24px; color: white; text-align: center; }
-        .shltr-safe-icon { width: 64px; height: 64px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 32px; }
-        .shltr-safe h2 { font-size: 20px; font-weight: 700; }
-        .shltr-safe p { font-size: 13px; opacity: 0.9; margin-top: 4px; }
+        .shelter-card { background: rgba(255,255,255,0.85); backdrop-filter: blur(20px); border-radius: 24px; padding: 24px; box-shadow: 0 8px 32px rgba(0,0,0,0.08); border: 1px solid rgba(255,255,255,0.5); }
         
-        .shltr-section { font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
-        .shltr-section::before { content: ''; width: 4px; height: 14px; background: linear-gradient(135deg, #7c3aed, #db2777); border-radius: 2px; }
+        .shelter-safe { background: linear-gradient(135deg, #059669, #10b981); border-radius: 20px; padding: 28px; color: white; text-align: center; }
+        .shelter-safe-icon { width: 72px; height: 72px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 36px; }
+        .shelter-safe h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+        .shelter-safe p { font-size: 14px; opacity: 0.9; }
         
-        .shltr-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .shltr-btn { display: flex; flex-direction: column; align-items: center; padding: 16px 12px; border-radius: 14px; text-decoration: none; font-weight: 700; font-size: 20px; color: white; transition: all 0.2s; }
-        .shltr-btn span { font-size: 11px; font-weight: 500; margin-top: 4px; opacity: 0.9; }
-        .shltr-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
-        .shltr-btn.purple { background: linear-gradient(135deg, #7c3aed, #9333ea); }
-        .shltr-btn.red { background: linear-gradient(135deg, #dc2626, #ef4444); }
-        .shltr-btn.pink { background: linear-gradient(135deg, #db2777, #ec4899); }
-        .shltr-btn.blue { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+        .shelter-section-title { font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .shelter-section-title::before { content: ''; width: 4px; height: 16px; background: linear-gradient(135deg, #7c3aed, #db2777); border-radius: 2px; }
         
-        .shltr-tips { background: linear-gradient(135deg, #fef3c7, #fef9c3); border-radius: 14px; padding: 16px; border: 1px solid #fcd34d; }
-        .shltr-tips-title { font-size: 13px; font-weight: 600; color: #92400e; margin-bottom: 10px; }
-        .shltr-tips-list { list-style: none; }
-        .shltr-tips-list li { padding: 6px 0; color: #78350f; font-size: 12px; }
+        .shelter-btns { display: flex; flex-direction: column; gap: 12px; }
+        .shelter-btn { display: flex; align-items: center; gap: 14px; padding: 16px 20px; border-radius: 16px; text-decoration: none; font-weight: 600; font-size: 15px; color: white; transition: all 0.2s; }
+        .shelter-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+        .shelter-btn.purple { background: linear-gradient(135deg, #7c3aed, #9333ea); }
+        .shelter-btn.red { background: linear-gradient(135deg, #dc2626, #ef4444); }
+        .shelter-btn.pink { background: linear-gradient(135deg, #db2777, #ec4899); }
+        .shelter-btn.blue { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+        .shelter-btn-arrow { margin-left: auto; opacity: 0.7; font-size: 18px; }
         
-        .shltr-map-wrap { flex: 1; position: relative; border-radius: 20px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.12); min-height: 480px; }
-        .shltr-map { width: 100%; height: 100%; border: none; min-height: 520px; }
-        .shltr-map-badge { position: absolute; top: 16px; left: 16px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 10px 16px; border-radius: 10px; font-weight: 600; font-size: 13px; color: #7c3aed; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 6px; }
-        .shltr-map-badge::before { content: '🚔'; }
+        .shelter-tips { background: linear-gradient(135deg, #fef3c7, #fef9c3); border-radius: 16px; padding: 20px; border: 1px solid #fcd34d; }
+        .shelter-tips-title { font-size: 14px; font-weight: 600; color: #92400e; margin-bottom: 12px; }
+        .shelter-tips-list { list-style: none; }
+        .shelter-tips-list li { padding: 8px 0; color: #78350f; font-size: 13px; }
         
-        .shltr-footer { display: flex; gap: 8px; padding: 14px 20px; justify-content: center; flex-wrap: wrap; background: linear-gradient(135deg, #1f2937, #374151); }
-        .shltr-footer a { padding: 10px 18px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 13px; color: white; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); transition: all 0.2s; }
-        .shltr-footer a:hover { background: rgba(255,255,255,0.2); }
+        .shelter-map-wrap { flex: 1; position: relative; border-radius: 24px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.12); min-height: 500px; }
+        .shelter-map { width: 100%; height: 100%; border: none; min-height: 550px; }
+        .shelter-map-badge { position: absolute; top: 20px; left: 20px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 12px 20px; border-radius: 12px; font-weight: 600; color: #7c3aed; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        
+        .shelter-footer { display: flex; gap: 12px; padding: 20px 24px; justify-content: center; flex-wrap: wrap; background: linear-gradient(135deg, #1f2937, #374151); }
+        .shelter-footer a { padding: 12px 24px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 13px; color: white; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); transition: all 0.2s; }
+        .shelter-footer a:hover { background: rgba(255,255,255,0.2); }
         
         @media (max-width: 900px) {
-          .shltr-content { flex-direction: column; padding: 16px; }
-          .shltr-sidebar { width: 100%; }
-          .shltr-map-wrap, .shltr-map { min-height: 320px; }
+          .shelter-content { flex-direction: column; padding: 16px; }
+          .shelter-sidebar { width: 100%; }
+          .shelter-map-wrap { min-height: 350px; }
+          .shelter-map { min-height: 350px; }
         }
       `}</style>
 
-            <div className="shltr-page">
-                <header className="shltr-header">
-                    <div className="shltr-header-left">
+            <div className="shelter-page">
+                <header className="shelter-header">
+                    <div className="shelter-header-left">
                         <img src="/sakhi-logo.png" alt="Sakhi" />
                         <span>{t.title}</span>
                     </div>
-                    <a href="/" className="shltr-back">{t.backBtn}</a>
+                    <a href="/" className="shelter-back">{t.backBtn}</a>
                 </header>
 
-                <div className="shltr-content">
-                    <div className="shltr-sidebar">
-                        <div className="shltr-safe">
-                            <div className="shltr-safe-icon">🛡️</div>
+                <div className="shelter-content">
+                    <div className="shelter-sidebar">
+                        <div className="shelter-safe">
+                            <div className="shelter-safe-icon">🛡️</div>
                             <h2>{t.youAreSafe}</h2>
                             <p>{t.helpOnWay}</p>
                         </div>
 
-                        <div className="shltr-card">
-                            <div className="shltr-section">{t.quickConnect}</div>
-                            <div className="shltr-btns">
-                                <a href="tel:181" className="shltr-btn purple">
+                        <div className="shelter-card">
+                            <div className="shelter-section-title">{t.quickConnect}</div>
+                            <div className="shelter-btns">
+                                <a href="tel:181" className="shelter-btn purple">
                                     {t.womenHelpline}
-                                    <span>Women Helpline</span>
+                                    <span className="shelter-btn-arrow">→</span>
                                 </a>
-                                <a href="tel:100" className="shltr-btn red">
+                                <a href="tel:100" className="shelter-btn red">
                                     {t.police}
-                                    <span>Police</span>
+                                    <span className="shelter-btn-arrow">→</span>
                                 </a>
-                                <a href="tel:1091" className="shltr-btn pink">
+                                <a href="tel:1091" className="shelter-btn pink">
                                     {t.womenCell}
-                                    <span>Women Cell</span>
+                                    <span className="shelter-btn-arrow">→</span>
                                 </a>
-                                <a href="tel:7827170170" className="shltr-btn blue">
+                                <a href="tel:7827170170" className="shelter-btn blue">
                                     {t.ncw}
-                                    <span>Commission</span>
+                                    <span className="shelter-btn-arrow">→</span>
                                 </a>
                             </div>
                         </div>
 
-                        <div className="shltr-tips">
-                            <div className="shltr-tips-title">{t.safetyTips}</div>
-                            <ul className="shltr-tips-list">
+                        <div className="shelter-tips">
+                            <div className="shelter-tips-title">{t.safetyTips}</div>
+                            <ul className="shelter-tips-list">
                                 <li>{t.tip1}</li>
                                 <li>{t.tip2}</li>
                                 <li>{t.tip3}</li>
@@ -144,24 +179,24 @@ export default function ShelterPage() {
                         </div>
                     </div>
 
-                    <div className="shltr-map-wrap">
+                    <div className="shelter-map-wrap">
                         {loading ? (
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', background: '#f9fafb' }}>
                                 <p style={{ color: '#6b7280' }}>{t.locating}</p>
                             </div>
                         ) : (
                             <>
-                                <iframe src={mapUrl} className="shltr-map" allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
-                                <div className="shltr-map-badge">{t.nearbyHelp}</div>
+                                <iframe src={mapUrl} className="shelter-map" allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
+                                <div className="shelter-map-badge">📍 {t.nearbyHelp}</div>
                             </>
                         )}
                     </div>
                 </div>
 
-                <div className="shltr-footer">
-                    <a href="tel:181">Women Helpline 181</a>
-                    <a href="tel:100">Police 100</a>
-                    <a href="tel:1091">Women Cell 1091</a>
+                <div className="shelter-footer">
+                    <a href="tel:181">{t.womenHelpline}</a>
+                    <a href="tel:100">{t.police}</a>
+                    <a href="tel:1091">{t.womenCell}</a>
                 </div>
             </div>
         </>
