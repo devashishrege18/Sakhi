@@ -2,8 +2,8 @@
 import { useState, useEffect, useRef } from 'react';
 
 const TRANSLATIONS = {
-    'hi-IN': { title: 'आपातकालीन एम्बुलेंस', backBtn: '← वापस', callRaised: 'एम्बुलेंस भेजी गई!', eta: 'पहुँचने का समय', mins: 'मिनट', ambulanceDispatched: 'एम्बुलेंस रवाना', driverName: 'ड्राइवर: राजेश कुमार', vehicleNo: 'DL 01 AB 1234', tracking: 'लाइव ट्रैकिंग', emergency108: '🚨 आपातकालीन 108', maternity102: '🚑 मातृत्व 102', childline: '👶 चाइल्डलाइन 1098', stayCalm: 'शांत रहें, मदद आ रही है', locating: 'स्थान खोज रहे हैं...', arrived: '🎉 एम्बुलेंस पहुँच गई!' },
-    'en-IN': { title: 'Emergency Ambulance', backBtn: '← Back', callRaised: 'AMBULANCE DISPATCHED!', eta: 'Arriving In', mins: 'mins', ambulanceDispatched: 'Ambulance En Route', driverName: 'Driver: Rajesh Kumar', vehicleNo: 'DL 01 AB 1234', tracking: 'Live Tracking', emergency108: '🚨 Emergency 108', maternity102: '🚑 Maternity 102', childline: '👶 Childline 1098', stayCalm: 'Stay calm, help is coming', locating: 'Locating you...', arrived: '🎉 Ambulance has arrived!' },
+    'hi-IN': { title: 'आपातकालीन एम्बुलेंस', backBtn: '← वापस', callRaised: 'एम्बुलेंस भेजी गई!', eta: 'पहुँचने का समय', mins: 'मिनट', driverName: 'ड्राइवर: राजेश कुमार', vehicleNo: 'DL 01 AB 1234', tracking: 'लाइव ट्रैकिंग', emergency108: '🚨 आपातकालीन 108', maternity102: '🚑 मातृत्व 102', childline: '👶 चाइल्डलाइन 1098', stayCalm: 'शांत रहें, मदद आ रही है', locating: 'स्थान खोज रहे हैं...', arrived: '🎉 एम्बुलेंस पहुँच गई!' },
+    'en-IN': { title: 'Emergency Ambulance', backBtn: '← Back', callRaised: 'AMBULANCE DISPATCHED!', eta: 'Arriving In', mins: 'mins', driverName: 'Driver: Rajesh Kumar', vehicleNo: 'DL 01 AB 1234', tracking: 'Live Tracking', emergency108: '🚨 Emergency 108', maternity102: '🚑 Maternity 102', childline: '👶 Childline 1098', stayCalm: 'Stay calm, help is coming', locating: 'Locating you...', arrived: '🎉 Ambulance has arrived!' },
     'bn-IN': { title: 'জরুরি অ্যাম্বুলেন্স', backBtn: '← ফিরুন', callRaised: 'অ্যাম্বুলেন্স পাঠানো হয়েছে!', eta: 'আসছে', mins: 'মিনিট', tracking: 'লাইভ ট্র্যাকিং', emergency108: '🚨 জরুরি 108', maternity102: '🚑 মাতৃত্ব 102', childline: '👶 চাইল্ডলাইন 1098', stayCalm: 'শান্ত থাকুন', locating: 'অবস্থান খুঁজছি...', arrived: '🎉 অ্যাম্বুলেন্স পৌঁছেছে!' },
     'te-IN': { title: 'అత్యవసర అంబులెన్స్', backBtn: '← వెనక్కి', callRaised: 'అంబులెన్స్ పంపబడింది!', eta: 'చేరుకుంటోంది', mins: 'నిమిషాలు', tracking: 'లైవ్ ట్రాకింగ్', emergency108: '🚨 అత్యవసర 108', maternity102: '🚑 మాతృత్వ 102', childline: '👶 చైల్డ్‌లైన్ 1098', stayCalm: 'ప్రశాంతంగా ఉండండి', locating: 'మీ స్థానం...', arrived: '🎉 అంబులెన్స్ వచ్చేసింది!' },
     'ta-IN': { title: 'அவசர ஆம்புலன்ஸ்', backBtn: '← பின்', callRaised: 'ஆம்புலன்ஸ் அனுப்பப்பட்டது!', eta: 'வருகிறது', mins: 'நிமிடங்கள்', tracking: 'நேரடி கண்காணிப்பு', emergency108: '🚨 அவசர 108', maternity102: '🚑 மகப்பேறு 102', childline: '👶 சைல்ட்லைன் 1098', stayCalm: 'அமைதியாக இருங்கள்', locating: 'இருப்பிடம்...', arrived: '🎉 ஆம்புலன்ஸ் வந்துவிட்டது!' },
@@ -14,22 +14,16 @@ const TRANSLATIONS = {
     'pa-IN': { title: 'ਐਮਰਜੈਂਸੀ ਐਂਬੂਲੈਂਸ', backBtn: '← ਪਿੱਛੇ', callRaised: 'ਐਂਬੂਲੈਂਸ ਭੇਜੀ!', eta: 'ਆ ਰਹੀ ਹੈ', mins: 'ਮਿੰਟ', tracking: 'ਲਾਈਵ ਟਰੈਕਿੰਗ', emergency108: '🚨 ਐਮਰਜੈਂਸੀ 108', maternity102: '🚑 ਮੈਟਰਨਿਟੀ 102', childline: '👶 ਚਾਈਲਡਲਾਈਨ 1098', stayCalm: 'ਸ਼ਾਂਤ ਰਹੋ', locating: 'ਟਿਕਾਣਾ...', arrived: '🎉 ਐਂਬੂਲੈਂਸ ਆ ਗਈ!' }
 };
 
-// Calculate distance between two coordinates (Haversine formula)
 function getDistance(lat1, lng1, lat2, lng2) {
-    const R = 6371; // Earth's radius in km
+    const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLng = (lng2 - lng1) * Math.PI / 180;
-    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
+    const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-// Calculate ETA based on distance (assuming 30 km/h avg speed in city traffic)
 function calculateETA(distanceKm) {
-    const avgSpeedKmH = 30;
-    const timeHours = distanceKm / avgSpeedKmH;
-    const timeMinutes = Math.ceil(timeHours * 60);
-    return Math.max(2, Math.min(timeMinutes, 30)); // Between 2-30 mins
+    return Math.max(2, Math.min(Math.ceil((distanceKm / 30) * 60), 30));
 }
 
 export default function AmbulancePage() {
@@ -42,7 +36,7 @@ export default function AmbulancePage() {
     const [arrived, setArrived] = useState(false);
     const [ambulancePos, setAmbulancePos] = useState(null);
     const mapRef = useRef(null);
-    const mapInstanceRef = useRef(null);
+    const leafletMapRef = useRef(null);
     const ambulanceMarkerRef = useRef(null);
     const timerRef = useRef(null);
     const totalSecondsRef = useRef(0);
@@ -57,31 +51,22 @@ export default function AmbulancePage() {
         }
     }, []);
 
-    // Get user location and calculate hospital position
     useEffect(() => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
                     const userLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
                     setUserLocation(userLoc);
-
-                    // Simulate hospital location 2-5 km away in random direction
                     const angle = Math.random() * 2 * Math.PI;
-                    const distance = 0.02 + Math.random() * 0.03; // ~2-5km in degrees
-                    const hospLoc = {
-                        lat: userLoc.lat + distance * Math.cos(angle),
-                        lng: userLoc.lng + distance * Math.sin(angle)
-                    };
+                    const dist = 0.02 + Math.random() * 0.03;
+                    const hospLoc = { lat: userLoc.lat + dist * Math.cos(angle), lng: userLoc.lng + dist * Math.sin(angle) };
                     setHospitalLocation(hospLoc);
-
-                    // Calculate real ETA based on distance
+                    setAmbulancePos(hospLoc);
                     const distKm = getDistance(userLoc.lat, userLoc.lng, hospLoc.lat, hospLoc.lng);
                     const etaMins = calculateETA(distKm);
                     totalSecondsRef.current = etaMins * 60;
                     setEta({ mins: etaMins, secs: 0 });
                     startTimeRef.current = Date.now();
-
-                    setAmbulancePos(hospLoc);
                     setLoading(false);
                 },
                 () => {
@@ -89,98 +74,82 @@ export default function AmbulancePage() {
                     const hospLoc = { lat: 28.6339, lng: 77.2290 };
                     setUserLocation(userLoc);
                     setHospitalLocation(hospLoc);
+                    setAmbulancePos(hospLoc);
                     totalSecondsRef.current = 8 * 60;
                     setEta({ mins: 8, secs: 0 });
                     startTimeRef.current = Date.now();
-                    setAmbulancePos(hospLoc);
                     setLoading(false);
                 }
             );
         }
     }, []);
 
-    // Load Google Maps and initialize
+    // Initialize Leaflet map
     useEffect(() => {
-        if (!userLocation || !hospitalLocation || loading) return;
+        if (loading || !userLocation || !hospitalLocation || leafletMapRef.current) return;
 
-        const loadMap = () => {
-            if (!window.google || !mapRef.current) return;
+        const initMap = async () => {
+            const L = (await import('leaflet')).default;
+            await import('leaflet/dist/leaflet.css');
 
-            const map = new window.google.maps.Map(mapRef.current, {
-                center: { lat: (userLocation.lat + hospitalLocation.lat) / 2, lng: (userLocation.lng + hospitalLocation.lng) / 2 },
-                zoom: 14,
-                styles: [{ featureType: "poi", stylers: [{ visibility: "off" }] }]
+            const map = L.map(mapRef.current).setView(
+                [(userLocation.lat + hospitalLocation.lat) / 2, (userLocation.lng + hospitalLocation.lng) / 2],
+                14
+            );
+            leafletMapRef.current = map;
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
+
+            // User marker (blue)
+            const userIcon = L.divIcon({
+                html: '<div style="background:#3b82f6;width:20px;height:20px;border-radius:50%;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);"></div>',
+                className: '',
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
             });
-            mapInstanceRef.current = map;
+            L.marker([userLocation.lat, userLocation.lng], { icon: userIcon }).addTo(map).bindPopup('📍 Your Location');
 
-            // User marker
-            new window.google.maps.Marker({
-                position: userLocation,
-                map,
-                icon: { url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png' },
-                title: 'Your Location'
+            // Hospital marker (red)
+            const hospIcon = L.divIcon({
+                html: '<div style="font-size:24px;">🏥</div>',
+                className: '',
+                iconSize: [30, 30],
+                iconAnchor: [15, 15]
             });
+            L.marker([hospitalLocation.lat, hospitalLocation.lng], { icon: hospIcon }).addTo(map).bindPopup('🏥 Hospital');
 
-            // Hospital marker
-            new window.google.maps.Marker({
-                position: hospitalLocation,
-                map,
-                icon: { url: 'https://maps.google.com/mapfiles/ms/icons/hospitals.png' },
-                title: 'Hospital'
-            });
+            // Route line
+            L.polyline([[hospitalLocation.lat, hospitalLocation.lng], [userLocation.lat, userLocation.lng]], {
+                color: '#dc2626',
+                weight: 4,
+                opacity: 0.8,
+                dashArray: '10, 10'
+            }).addTo(map);
 
-            // Ambulance marker (custom)
-            const ambulanceMarker = new window.google.maps.Marker({
-                position: hospitalLocation,
-                map,
-                icon: {
-                    url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
-              <circle cx="20" cy="20" r="18" fill="#dc2626" stroke="white" stroke-width="3"/>
-              <text x="20" y="26" text-anchor="middle" font-size="18">🚑</text>
-            </svg>
-          `),
-                    scaledSize: new window.google.maps.Size(40, 40),
-                    anchor: new window.google.maps.Point(20, 20)
-                },
-                title: 'Ambulance'
+            // Ambulance marker (animated)
+            const ambIcon = L.divIcon({
+                html: '<div style="font-size:32px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));animation:bounce 0.5s infinite alternate;">🚑</div>',
+                className: '',
+                iconSize: [40, 40],
+                iconAnchor: [20, 20]
             });
-            ambulanceMarkerRef.current = ambulanceMarker;
+            const ambMarker = L.marker([hospitalLocation.lat, hospitalLocation.lng], { icon: ambIcon }).addTo(map);
+            ambulanceMarkerRef.current = ambMarker;
 
-            // Draw route
-            const directionsService = new window.google.maps.DirectionsService();
-            const directionsRenderer = new window.google.maps.DirectionsRenderer({
-                map,
-                suppressMarkers: true,
-                polylineOptions: { strokeColor: '#dc2626', strokeWeight: 4 }
-            });
-
-            directionsService.route({
-                origin: hospitalLocation,
-                destination: userLocation,
-                travelMode: window.google.maps.TravelMode.DRIVING
-            }, (result, status) => {
-                if (status === 'OK') {
-                    directionsRenderer.setDirections(result);
-                }
-            });
+            // Add keyframes for bounce
+            const style = document.createElement('style');
+            style.textContent = '@keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-5px); } }';
+            document.head.appendChild(style);
         };
 
-        // Load Google Maps script
-        if (!window.google) {
-            const script = document.createElement('script');
-            script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&libraries=places`;
-            script.async = true;
-            script.onload = loadMap;
-            document.head.appendChild(script);
-        } else {
-            loadMap();
-        }
-    }, [userLocation, hospitalLocation, loading]);
+        initMap();
+    }, [loading, userLocation, hospitalLocation]);
 
     // Timer and ambulance movement
     useEffect(() => {
-        if (!userLocation || !hospitalLocation || loading || arrived) return;
+        if (loading || arrived || !userLocation || !hospitalLocation) return;
 
         timerRef.current = setInterval(() => {
             const elapsed = (Date.now() - startTimeRef.current) / 1000;
@@ -190,24 +159,26 @@ export default function AmbulancePage() {
             setProgress(prog);
             setEta({ mins: Math.floor(remaining / 60), secs: Math.floor(remaining % 60) });
 
-            // Move ambulance marker along the route
-            if (ambulanceMarkerRef.current && userLocation && hospitalLocation) {
-                const newLat = hospitalLocation.lat + (userLocation.lat - hospitalLocation.lat) * (prog / 100);
-                const newLng = hospitalLocation.lng + (userLocation.lng - hospitalLocation.lng) * (prog / 100);
-                ambulanceMarkerRef.current.setPosition({ lat: newLat, lng: newLng });
-                setAmbulancePos({ lat: newLat, lng: newLng });
+            // Move ambulance on map
+            const newLat = hospitalLocation.lat + (userLocation.lat - hospitalLocation.lat) * (prog / 100);
+            const newLng = hospitalLocation.lng + (userLocation.lng - hospitalLocation.lng) * (prog / 100);
+            setAmbulancePos({ lat: newLat, lng: newLng });
+
+            if (ambulanceMarkerRef.current) {
+                ambulanceMarkerRef.current.setLatLng([newLat, newLng]);
             }
 
-            // Check if arrived
             if (remaining <= 0) {
                 setArrived(true);
                 clearInterval(timerRef.current);
-                if (ambulanceMarkerRef.current) ambulanceMarkerRef.current.setPosition(userLocation);
+                if (ambulanceMarkerRef.current) {
+                    ambulanceMarkerRef.current.setLatLng([userLocation.lat, userLocation.lng]);
+                }
             }
         }, 1000);
 
         return () => clearInterval(timerRef.current);
-    }, [userLocation, hospitalLocation, loading, arrived]);
+    }, [loading, arrived, userLocation, hospitalLocation]);
 
     return (
         <>
@@ -246,7 +217,7 @@ export default function AmbulancePage() {
         .amb-driver-info p { font-size: 11px; color: #6b7280; }
         .amb-map-wrap { flex: 1; position: relative; border-radius: 20px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.12); min-height: 480px; }
         .amb-map { width: 100%; height: 100%; min-height: 520px; }
-        .amb-map-badge { position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 10px 16px; border-radius: 10px; display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13px; color: #059669; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .amb-map-badge { position: absolute; top: 16px; right: 16px; z-index: 1000; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 10px 16px; border-radius: 10px; display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13px; color: #059669; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .amb-live-dot { width: 8px; height: 8px; background: #dc2626; border-radius: 50%; animation: blink 1s infinite; }
         .amb-btns { display: flex; gap: 10px; padding: 16px 20px; justify-content: center; background: rgba(255,255,255,0.5); }
         .amb-btn { padding: 12px 24px; border-radius: 14px; text-decoration: none; font-weight: 600; font-size: 14px; color: white; transition: transform 0.2s; }
