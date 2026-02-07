@@ -1,9 +1,9 @@
 import { initializeApp, getApps } from 'firebase/app';
 import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, query, orderBy, limit } from 'firebase/firestore';
 
-// Firebase configuration (API key is public - protected by Firebase security rules)
+// Firebase configuration (API key loaded from environment variable)
 const firebaseConfig = {
-    apiKey: "AIzaSyAcGxJAQ7gx6VTNPL3qKcisKPHXxJrirnk",
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
     authDomain: "same-field-final.firebaseapp.com",
     projectId: "same-field-final",
     storageBucket: "same-field-final.firebasestorage.app",

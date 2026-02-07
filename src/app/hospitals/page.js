@@ -27,7 +27,7 @@ export default function HospitalsPage() {
   }, []);
 
   const mapUrl = location
-    ? `https://www.google.com/maps/embed/v1/search?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=hospitals+near+me&center=${location.lat},${location.lng}&zoom=14`
+    ? `https://www.google.com/maps/embed/v1/search?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}&q=hospitals+near+me&center=${location.lat},${location.lng}&zoom=14`
     : null;
 
   return (

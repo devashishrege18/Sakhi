@@ -72,7 +72,7 @@ export default function ShelterPage() {
     }, []);
 
     // Police stations search
-    const mapUrl = location ? `https://www.google.com/maps/embed/v1/search?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=police+station&center=${location.lat},${location.lng}&zoom=14` : null;
+    const mapUrl = location ? `https://www.google.com/maps/embed/v1/search?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}&q=police+station&center=${location.lat},${location.lng}&zoom=14` : null;
 
     return (
         <>
