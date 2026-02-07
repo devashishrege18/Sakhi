@@ -1,9 +1,0 @@
-{
-  "name": "samefield-sports",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ]
-}
