@@ -13,9 +13,9 @@ export async function POST(req) {
             return NextResponse.json({ error: 'Text is required' }, { status: 400 });
         }
 
-        // Voice: "Aisha" - friendly, empathetic Hindi voice, perfect for conversational health app
-        // Alternative: "Aria" for multilingual, or custom Indian voices
-        const VOICE_ID = "JBFqnCBsd6RMkjVDRZzb"; // Aisha - warm Indian voice
+        // Voice: "Ayesha" - Energetic Indian Female Voice, warm and charismatic
+        // ID verified from ElevenLabs voice library
+        const VOICE_ID = "0ZOhGcBopt9S6GBK8tnj"; // Ayesha - Female Indian voice
 
         const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}?optimize_streaming_latency=4`, {
             method: "POST",
