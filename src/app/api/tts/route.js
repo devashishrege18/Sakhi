@@ -34,8 +34,13 @@ export async function POST(req) {
 
         if (!response.ok) {
             const err = await response.text();
-            console.error("ElevenLabs Error:", err);
-            return NextResponse.json({ error: 'TTS API error' }, { status: response.status });
+            console.error("ElevenLabs Error:", response.status, err);
+            // Return detailed error message for debugging
+            return NextResponse.json({
+                error: 'TTS API error',
+                details: err,
+                status: response.status
+            }, { status: response.status });
         }
 
         return new NextResponse(response.body, {
