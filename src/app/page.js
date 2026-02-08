@@ -553,44 +553,67 @@ export default function Home() {
 
 
   const speakResponse = async (text, nav) => {
-    // Stop any existing audio
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current = null;
+    // Cancel any existing speech
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
     }
 
     setError(null);
 
     try {
-      const res = await fetch('/api/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text }),
-      });
-
-      if (!res.ok) {
-        let errMsg = 'TTS Request Failed';
-        try { const data = await res.json(); errMsg = data.error || errMsg; } catch (e) { }
-        throw new Error(errMsg);
+      // Use browser's Web Speech API (completely free)
+      if (typeof window === 'undefined' || !window.speechSynthesis) {
+        throw new Error('Speech synthesis not supported');
       }
 
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const audio = new Audio(url);
-      audio.playbackRate = 0.9;
-      audioRef.current = audio;
+      const utterance = new SpeechSynthesisUtterance(text);
 
-      audio.onended = () => {
+      // Map language codes to speech synthesis voices
+      const langMap = {
+        'hi-IN': 'hi-IN',
+        'bn-IN': 'bn-IN',
+        'ta-IN': 'ta-IN',
+        'te-IN': 'te-IN',
+        'mr-IN': 'mr-IN',
+        'gu-IN': 'gu-IN',
+        'kn-IN': 'kn-IN',
+        'ml-IN': 'ml-IN',
+        'pa-IN': 'pa-IN',
+        'en-IN': 'en-IN',
+      };
+
+      utterance.lang = langMap[selectedLang?.code] || 'hi-IN';
+      utterance.rate = 0.9;
+      utterance.pitch = 1.0;
+
+      // Try to find a female voice for the language
+      const voices = window.speechSynthesis.getVoices();
+      const femaleVoice = voices.find(v =>
+        v.lang.startsWith(utterance.lang.split('-')[0]) &&
+        (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('google'))
+      );
+      if (femaleVoice) {
+        utterance.voice = femaleVoice;
+      }
+
+      utterance.onend = () => {
         setIsSpeaking(false);
         setIsListening(false);
-        URL.revokeObjectURL(url);
+        if (nav) {
+          setTimeout(() => { window.location.href = nav; }, 500);
+        }
+      };
+
+      utterance.onerror = (e) => {
+        console.error('Speech error:', e);
+        setIsSpeaking(false);
         if (nav) {
           setTimeout(() => { window.location.href = nav; }, 500);
         }
       };
 
       setIsSpeaking(true);
-      await audio.play();
+      window.speechSynthesis.speak(utterance);
     } catch (e) {
       console.error('TTS error:', e);
       setError('Audio Error: ' + e.message);
