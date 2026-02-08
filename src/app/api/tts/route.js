@@ -1,56 +1,61 @@
 import { NextResponse } from 'next/server';
+import { PollyClient, SynthesizeSpeechCommand } from '@aws-sdk/client-polly';
+
+// Initialize Polly client
+const pollyClient = new PollyClient({
+    region: process.env.AWS_REGION || 'ap-south-1',
+    credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    },
+});
 
 export async function POST(req) {
     try {
         const { text } = await req.json();
-        const apiKey = process.env.ELEVENLABS_API_KEY;
 
-        if (!apiKey) {
-            return NextResponse.json({ error: 'API key not configured' }, { status: 500 });
+        if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
+            return NextResponse.json({ error: 'AWS credentials not configured' }, { status: 500 });
         }
 
         if (!text) {
             return NextResponse.json({ error: 'Text is required' }, { status: 400 });
         }
 
-        // Voice: "Rachel" - default voice, works with any API key
-        const VOICE_ID = "21m00Tcm4TlvDq8ikWAM";
-
-        const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}?optimize_streaming_latency=4`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "xi-api-key": apiKey,
-            },
-            body: JSON.stringify({
-                text: text,
-                model_id: "eleven_multilingual_v2",
-                voice_settings: {
-                    stability: 0.5,
-                    similarity_boost: 0.5,
-                },
-            }),
+        // Use Kajal neural voice for Hindi (works for all Indian language scripts)
+        const command = new SynthesizeSpeechCommand({
+            Text: text,
+            OutputFormat: 'mp3',
+            VoiceId: 'Kajal',
+            Engine: 'neural',
+            LanguageCode: 'hi-IN',
         });
 
-        if (!response.ok) {
-            const err = await response.text();
-            console.error("ElevenLabs Error:", response.status, err);
-            // Return detailed error message for debugging
-            return NextResponse.json({
-                error: 'TTS API error',
-                details: err,
-                status: response.status
-            }, { status: response.status });
-        }
+        const response = await pollyClient.send(command);
 
-        return new NextResponse(response.body, {
+        // Convert audio stream to buffer
+        const audioBuffer = await streamToBuffer(response.AudioStream);
+
+        return new NextResponse(audioBuffer, {
             headers: {
                 'Content-Type': 'audio/mpeg',
             },
         });
 
     } catch (error) {
-        console.error("TTS Route Error:", error);
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+        console.error('Amazon Polly TTS Error:', error);
+        return NextResponse.json({
+            error: 'TTS API error',
+            details: error.message
+        }, { status: 500 });
     }
+}
+
+// Helper function to convert stream to buffer
+async function streamToBuffer(stream) {
+    const chunks = [];
+    for await (const chunk of stream) {
+        chunks.push(chunk);
+    }
+    return Buffer.concat(chunks);
 }
