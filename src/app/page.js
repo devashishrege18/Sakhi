@@ -605,7 +605,7 @@ export default function Home() {
     }
   };
 
-  const handleVoiceCommand = (text) => {
+  const handleVoiceCommand = async (text) => {
     if (!currentChatId) setCurrentChatId(newChatId());
     const lower = text.toLowerCase();
     for (const [k, f] of Object.entries(VOICE_FEATURES)) {
@@ -614,8 +614,61 @@ export default function Home() {
         const redirects = REDIRECT_TRANSLATIONS[selectedLang.code] || REDIRECT_TRANSLATIONS['en-IN'];
         const responseText = redirects[k] || 'Redirecting...';
 
-        setMessages(prev => [...prev, { role: 'user', content: text }, { role: 'assistant', content: responseText, navigating: true }]);
-        speakResponse(responseText, f.route);
+        // Show user message first
+        setMessages(prev => [...prev, { role: 'user', content: text }]);
+        setLoading(true);
+
+        // Fetch TTS first, then show assistant message with audio
+        try {
+          const ttsRes = await fetch('/api/tts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              text: responseText,
+              language: selectedLang?.code || 'hi-IN'
+            }),
+          });
+
+          if (ttsRes.ok) {
+            const blob = await ttsRes.blob();
+            const url = URL.createObjectURL(blob);
+            const audio = new Audio(url);
+            audio.playbackRate = 1.0;
+
+            if (audioRef.current) {
+              audioRef.current.pause();
+              audioRef.current = null;
+            }
+            audioRef.current = audio;
+
+            // Show text and play audio TOGETHER
+            setMessages(prev => [...prev, { role: 'assistant', content: responseText, navigating: true }]);
+            setIsSpeaking(true);
+            await audio.play();
+
+            audio.onended = () => {
+              setIsSpeaking(false);
+              setIsListening(false);
+              URL.revokeObjectURL(url);
+              if (f.route) {
+                setTimeout(() => { window.location.href = f.route; }, 500);
+              }
+            };
+          } else {
+            setMessages(prev => [...prev, { role: 'assistant', content: responseText, navigating: true }]);
+            if (f.route) {
+              setTimeout(() => { window.location.href = f.route; }, 500);
+            }
+          }
+        } catch (e) {
+          console.error('TTS error:', e);
+          setMessages(prev => [...prev, { role: 'assistant', content: responseText, navigating: true }]);
+          if (f.route) {
+            setTimeout(() => { window.location.href = f.route; }, 500);
+          }
+        }
+
+        setLoading(false);
         return;
       }
     }
@@ -639,8 +692,50 @@ export default function Home() {
         if (newLang) setSelectedLang(newLang);
       }
 
-      setMessages(prev => [...prev, { role: 'assistant', content: data.content, intent: data.intent }]);
-      speakResponse(data.content);
+      // Fetch TTS audio FIRST, then show text when audio is ready
+      try {
+        const ttsRes = await fetch('/api/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text: data.content,
+            language: selectedLang?.code || 'hi-IN'
+          }),
+        });
+
+        if (ttsRes.ok) {
+          const blob = await ttsRes.blob();
+          const url = URL.createObjectURL(blob);
+          const audio = new Audio(url);
+          audio.playbackRate = 1.0;
+
+          // Stop any existing audio
+          if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current = null;
+          }
+          audioRef.current = audio;
+
+          // Show text and play audio TOGETHER
+          setMessages(prev => [...prev, { role: 'assistant', content: data.content, intent: data.intent }]);
+          setIsSpeaking(true);
+          await audio.play();
+
+          audio.onended = () => {
+            setIsSpeaking(false);
+            setIsListening(false);
+            URL.revokeObjectURL(url);
+          };
+        } else {
+          // If TTS fails, still show the text
+          setMessages(prev => [...prev, { role: 'assistant', content: data.content, intent: data.intent }]);
+        }
+      } catch (ttsError) {
+        console.error('TTS error:', ttsError);
+        // If TTS fails, still show the text
+        setMessages(prev => [...prev, { role: 'assistant', content: data.content, intent: data.intent }]);
+      }
+
       loadChatHistory();
     } catch { setMessages(prev => [...prev, { role: 'assistant', content: 'Connection error. Try again. ' }]); }
     setLoading(false);
