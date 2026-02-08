@@ -6,6 +6,7 @@ export async function POST(req) {
         const { text } = await req.json();
 
         if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
+            console.error('AWS credentials missing');
             return NextResponse.json({ error: 'AWS credentials not configured' }, { status: 500 });
         }
 
@@ -13,7 +14,7 @@ export async function POST(req) {
             return NextResponse.json({ error: 'Text is required' }, { status: 400 });
         }
 
-        // Initialize Polly client inside the handler (for serverless compatibility)
+        // Initialize Polly client inside the handler
         const pollyClient = new PollyClient({
             region: process.env.AWS_REGION || 'ap-south-1',
             credentials: {
@@ -22,7 +23,7 @@ export async function POST(req) {
             },
         });
 
-        // Use Kajal neural voice for Hindi (works for all Indian language scripts)
+        // Use Kajal neural voice for Hindi
         const command = new SynthesizeSpeechCommand({
             Text: text,
             OutputFormat: 'mp3',
@@ -33,36 +34,24 @@ export async function POST(req) {
 
         const response = await pollyClient.send(command);
 
-        // Convert audio stream to Uint8Array for Edge compatibility
-        const chunks = [];
-        const reader = response.AudioStream.transformToWebStream().getReader();
+        // The AudioStream is a Readable stream, convert to Uint8Array
+        const audioStream = response.AudioStream;
 
-        while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            chunks.push(value);
-        }
+        // Use transformToByteArray which is available in AWS SDK v3
+        const audioBytes = await audioStream.transformToByteArray();
 
-        // Combine all chunks into one Uint8Array
-        const totalLength = chunks.reduce((acc, chunk) => acc + chunk.length, 0);
-        const audioData = new Uint8Array(totalLength);
-        let offset = 0;
-        for (const chunk of chunks) {
-            audioData.set(chunk, offset);
-            offset += chunk.length;
-        }
-
-        return new NextResponse(audioData, {
+        return new NextResponse(audioBytes, {
             headers: {
                 'Content-Type': 'audio/mpeg',
             },
         });
 
     } catch (error) {
-        console.error('Amazon Polly TTS Error:', error);
+        console.error('Amazon Polly TTS Error:', error.name, error.message);
         return NextResponse.json({
             error: 'TTS API error',
-            details: error.message
+            details: error.message,
+            name: error.name
         }, { status: 500 });
     }
 }
