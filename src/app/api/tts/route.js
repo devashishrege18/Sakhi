@@ -25,20 +25,18 @@ export async function POST(req) {
             'kn-IN': 'kn-IN',
             'ml-IN': 'ml-IN',
             'pa-IN': 'pa-IN',
-            'or-IN': 'od-IN', // Odia uses 'od' in Sarvam
+            'or-IN': 'od-IN',
             'en-IN': 'en-IN',
         };
 
         const targetLang = langMap[language] || 'hi-IN';
 
-        // Use Priya voice (female, natural) - works with Bulbul v3
+        // Use lowercase speaker names as per Sarvam API docs
         const requestBody = {
-            inputs: [text.substring(0, 2500)], // Bulbul v3 limit, use 'inputs' array
+            text: text.substring(0, 1000), // REST API limit is 1000 chars
             target_language_code: targetLang,
-            speaker: 'Priya',
+            speaker: 'priya', // lowercase - female voice
             model: 'bulbul:v3',
-            speech_sample_rate: 22050,
-            enable_preprocessing: true,
         };
 
         console.log('Sarvam TTS request:', JSON.stringify(requestBody));
@@ -66,7 +64,7 @@ export async function POST(req) {
         const data = await response.json();
 
         if (!data.audios || !data.audios[0]) {
-            console.error('Sarvam response missing audio:', data);
+            console.error('Sarvam response:', data);
             return NextResponse.json({ error: 'No audio in response' }, { status: 500 });
         }
 
