@@ -1,57 +1,82 @@
 import { NextResponse } from 'next/server';
-import { PollyClient, SynthesizeSpeechCommand } from '@aws-sdk/client-polly';
 
 export async function POST(req) {
     try {
-        const { text } = await req.json();
+        const { text, language } = await req.json();
+        const apiKey = process.env.SARVAM_API_KEY;
 
-        if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
-            console.error('AWS credentials missing');
-            return NextResponse.json({ error: 'AWS credentials not configured' }, { status: 500 });
+        if (!apiKey) {
+            console.error('Sarvam API key missing');
+            return NextResponse.json({ error: 'API key not configured' }, { status: 500 });
         }
 
         if (!text) {
             return NextResponse.json({ error: 'Text is required' }, { status: 400 });
         }
 
-        // Initialize Polly client inside the handler
-        const pollyClient = new PollyClient({
-            region: process.env.AWS_REGION || 'ap-south-1',
-            credentials: {
-                accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-                secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-            },
-        });
+        // Map language codes to Sarvam format
+        const langMap = {
+            'hi-IN': 'hi-IN',
+            'bn-IN': 'bn-IN',
+            'ta-IN': 'ta-IN',
+            'te-IN': 'te-IN',
+            'mr-IN': 'mr-IN',
+            'gu-IN': 'gu-IN',
+            'kn-IN': 'kn-IN',
+            'ml-IN': 'ml-IN',
+            'pa-IN': 'pa-IN',
+            'or-IN': 'or-IN',
+            'en-IN': 'en-IN',
+        };
 
-        // Use Kajal neural voice for Hindi
-        const command = new SynthesizeSpeechCommand({
-            Text: text,
-            OutputFormat: 'mp3',
-            VoiceId: 'Kajal',
-            Engine: 'neural',
-            LanguageCode: 'hi-IN',
-        });
+        const targetLang = langMap[language] || 'hi-IN';
 
-        const response = await pollyClient.send(command);
-
-        // The AudioStream is a Readable stream, convert to Uint8Array
-        const audioStream = response.AudioStream;
-
-        // Use transformToByteArray which is available in AWS SDK v3
-        const audioBytes = await audioStream.transformToByteArray();
-
-        return new NextResponse(audioBytes, {
+        // Use Priya voice (female, natural) for conversational health app
+        const response = await fetch('https://api.sarvam.ai/text-to-speech', {
+            method: 'POST',
             headers: {
-                'Content-Type': 'audio/mpeg',
+                'Content-Type': 'application/json',
+                'api-subscription-key': apiKey,
+            },
+            body: JSON.stringify({
+                text: text.substring(0, 2500), // Bulbul v3 limit
+                target_language_code: targetLang,
+                speaker: 'Priya', // Female voice - warm and natural
+                model: 'bulbul:v3',
+                speech_sample_rate: 22050,
+            }),
+        });
+
+        if (!response.ok) {
+            const err = await response.text();
+            console.error('Sarvam TTS Error:', response.status, err);
+            return NextResponse.json({
+                error: 'TTS API error',
+                details: err
+            }, { status: response.status });
+        }
+
+        // Sarvam returns base64 audio in JSON response
+        const data = await response.json();
+
+        if (!data.audios || !data.audios[0]) {
+            return NextResponse.json({ error: 'No audio in response' }, { status: 500 });
+        }
+
+        // Convert base64 to buffer
+        const audioBuffer = Buffer.from(data.audios[0], 'base64');
+
+        return new NextResponse(audioBuffer, {
+            headers: {
+                'Content-Type': 'audio/wav',
             },
         });
 
     } catch (error) {
-        console.error('Amazon Polly TTS Error:', error.name, error.message);
+        console.error('Sarvam TTS Route Error:', error);
         return NextResponse.json({
-            error: 'TTS API error',
-            details: error.message,
-            name: error.name
+            error: 'Internal server error',
+            details: error.message
         }, { status: 500 });
     }
 }
