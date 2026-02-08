@@ -1,15 +1,6 @@
 import { NextResponse } from 'next/server';
 import { PollyClient, SynthesizeSpeechCommand } from '@aws-sdk/client-polly';
 
-// Initialize Polly client
-const pollyClient = new PollyClient({
-    region: process.env.AWS_REGION || 'ap-south-1',
-    credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    },
-});
-
 export async function POST(req) {
     try {
         const { text } = await req.json();
@@ -22,6 +13,15 @@ export async function POST(req) {
             return NextResponse.json({ error: 'Text is required' }, { status: 400 });
         }
 
+        // Initialize Polly client inside the handler (for serverless compatibility)
+        const pollyClient = new PollyClient({
+            region: process.env.AWS_REGION || 'ap-south-1',
+            credentials: {
+                accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+                secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+            },
+        });
+
         // Use Kajal neural voice for Hindi (works for all Indian language scripts)
         const command = new SynthesizeSpeechCommand({
             Text: text,
@@ -33,10 +33,26 @@ export async function POST(req) {
 
         const response = await pollyClient.send(command);
 
-        // Convert audio stream to buffer
-        const audioBuffer = await streamToBuffer(response.AudioStream);
+        // Convert audio stream to Uint8Array for Edge compatibility
+        const chunks = [];
+        const reader = response.AudioStream.transformToWebStream().getReader();
 
-        return new NextResponse(audioBuffer, {
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            chunks.push(value);
+        }
+
+        // Combine all chunks into one Uint8Array
+        const totalLength = chunks.reduce((acc, chunk) => acc + chunk.length, 0);
+        const audioData = new Uint8Array(totalLength);
+        let offset = 0;
+        for (const chunk of chunks) {
+            audioData.set(chunk, offset);
+            offset += chunk.length;
+        }
+
+        return new NextResponse(audioData, {
             headers: {
                 'Content-Type': 'audio/mpeg',
             },
@@ -49,13 +65,4 @@ export async function POST(req) {
             details: error.message
         }, { status: 500 });
     }
-}
-
-// Helper function to convert stream to buffer
-async function streamToBuffer(stream) {
-    const chunks = [];
-    for await (const chunk of stream) {
-        chunks.push(chunk);
-    }
-    return Buffer.concat(chunks);
 }
