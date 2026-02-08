@@ -31,15 +31,9 @@ export async function POST(req) {
 
         const targetLang = langMap[language] || 'hi-IN';
 
-        // Fix pronunciation - replace "Sakhi" with phonetic spelling
-        let processedText = text
-            .replace(/Sakhi/gi, 'Sukhi')
-            .replace(/सखी/g, 'सखी')  // Hindi already correct
-            .substring(0, 1000); // REST API limit is 1000 chars
-
         // Use lowercase speaker names as per Sarvam API docs
         const requestBody = {
-            text: processedText,
+            text: text.substring(0, 1000), // REST API limit is 1000 chars
             target_language_code: targetLang,
             speaker: 'priya', // lowercase - female voice
             model: 'bulbul:v3',
