@@ -954,7 +954,7 @@ export default function Home() {
         .toggle-btn:hover { background: rgba(255,255,255,0.5); }
         .logo-container { display: flex; align-items: center; gap: 12px; }
         .logo-img { height: 45px; width: auto; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2)); }
-        .logo-text { font-size: 28px; font-weight: 700; color: #6b21a8; font-family: 'Playfair Display', Georgia, serif; text-shadow: 0 2px 8px rgba(107,33,168,0.3); letter-spacing: 0.5px; }
+        .logo-text { font-size: 28px; font-weight: bold; color: #6b21a8; font-family: Georgia, serif; text-shadow: 0 2px 8px rgba(107,33,168,0.3); }
         .header-right { display: flex; align-items: center; gap: 12px; }
         .lang-dropdown-container { position: relative; }
         .lang-btn { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: rgba(255,255,255,0.4); border: none; border-radius: 10px; color: #4a1a6b; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }

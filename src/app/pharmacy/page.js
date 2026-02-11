@@ -63,7 +63,7 @@ export default function PharmacyPage() {
         .pharm-nav { background: linear-gradient(135deg, #6B21A8, #9333EA); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;  }
         .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
         .logo-img { width: 36px; height: 36px; }
-        .logo-text { font-size: 24px; font-weight: 800; color: white; font-style: italic; font-style: italic; }
+        .logo-text { font-size: 24px; font-weight: 800; color: white; font-family: Georgia, serif; }
         .page-title { font-size: 24px; font-weight: 700; color: white; }
         .cart-icon { position: relative; background: white; padding: 8px 12px; border-radius: 20px; border: none; cursor: pointer; font-size: 18px; }
         .cart-badge { position: absolute; top: -5px; right: -5px; background: #EC4899; color: white; font-size: 10px; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }

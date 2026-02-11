@@ -35,7 +35,7 @@ export default function ForumPage() {
         .forum-nav { background: linear-gradient(135deg, #6B21A8, #9333EA); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;  }
         .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
         .logo-img { width: 36px; height: 36px; }
-        .logo-text { font-size: 24px; font-weight: 800; color: white; font-style: italic; font-style: italic; }
+        .logo-text { font-size: 24px; font-weight: 800; color: white; font-family: Georgia, serif; }
         .page-title { font-size: 24px; font-weight: 700; color: white; }
         .new-btn { background: white; color: #9333EA; border: none; padding: 10px 20px; border-radius: 25px; font-weight: 600; font-size: 14px; cursor: pointer; }
         .forum-content { padding: 20px 24px; }
