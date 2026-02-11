@@ -742,7 +742,7 @@ export default function Home() {
   };
 
   const handleSubmit = () => handleVoiceCommand(input);
-  const handleKey = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); } };
+  const handleKey = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!loading && !isSpeaking) handleSubmit(); } };
   const waveHeights = [30, 50, 75, 40, 65, 90, 55, 80, 45, 70, 35];
 
   // Get translations for current language
@@ -764,7 +764,7 @@ export default function Home() {
       {/* Sidebar */}
       <aside className={`sidebar ${showSidebar ? 'open' : ''}`}>
         <div className="sidebar-top">
-          <button onClick={startNewChat} className="new-chat-btn">
+          <button onClick={startNewChat} disabled={loading || isSpeaking} className="new-chat-btn">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14" /></svg>
             {t.newChat}
           </button>
@@ -853,7 +853,7 @@ export default function Home() {
 
               <div className="suggestions">
                 {t.suggestions.map(([q, label]) => (
-                  <button key={q} onClick={() => handleVoiceCommand(q)} className="suggestion-card">
+                  <button key={q} onClick={() => handleVoiceCommand(q)} disabled={loading || isSpeaking} className="suggestion-card">
                     <span className="suggestion-text">{q}</span>
                     <span className="suggestion-label">{label}</span>
                   </button>
@@ -898,12 +898,12 @@ export default function Home() {
         {/* Input Area */}
         <div className="input-wrapper">
           <div className="input-container">
-            <textarea value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKey} placeholder={t.placeholder} rows={1} className="chat-input" />
+            <textarea value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKey} placeholder={t.placeholder} rows={1} className="chat-input" disabled={loading || isSpeaking} />
             <div className="input-actions">
-              <button onClick={toggleListening} className={`action-btn mic ${isListening ? 'active' : ''}`}>
+              <button onClick={toggleListening} disabled={loading || isSpeaking} className={`action-btn mic ${isListening ? 'active' : ''}`}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" /><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" /></svg>
               </button>
-              <button onClick={handleSubmit} disabled={!input.trim() || loading} className="action-btn send">
+              <button onClick={handleSubmit} disabled={!input.trim() || loading || isSpeaking} className="action-btn send">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" /></svg>
               </button>
             </div>
@@ -975,6 +975,10 @@ export default function Home() {
         .suggestion-card:hover { background: white; transform: translateY(-4px); box-shadow: 0 10px 30px rgba(107,33,168,0.15); }
         .suggestion-text { display: block; font-size: 14px; color: #4a1a6b; margin-bottom: 6px; font-weight: 500; }
         .suggestion-label { font-size: 12px; color: #888; }
+        .suggestion-card:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+        .new-chat-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+        .chat-input:disabled { opacity: 0.6; cursor: not-allowed; }
+        .action-btn:disabled { opacity: 0.4; cursor: not-allowed !important; }
         
         /* Messages */
         .messages { max-width: 800px; margin: 0 auto; }
