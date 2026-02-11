@@ -25,7 +25,7 @@ const PRODUCTS = [
   { id: 5, name: 'NaturesPlus Biotin Gummies', desc: '5000 mcg, 60 Raspberry Gummies', category: 'Skincare', price: 449, mrp: 599, image: '/gummies.jpg.jpeg' },
   { id: 6, name: 'Comfy Period Pain Roll-On', desc: '100% Ayurvedic, 50ml', category: 'Menstrual', price: 125, mrp: 175, image: '/rollon.jpg.jpeg' },
   { id: 7, name: 'Naturelo Women Multivitamin', desc: '120 Vegetarian Capsules', category: 'Vitamins', price: 349, mrp: 499, image: '/muulti vitamin.jpg.jpeg' },
-  { id: 8, name: 'Stress Relief Herbal Tea', desc: 'Chamomile & lavender blend', category: 'Wellness', price: 199, mrp: 249, image: '/WhatsApp Image 2026-02-12 at 01.46.15.jpeg' }
+  { id: 8, name: 'Stress Relief Herbal Tea', desc: 'Chamomile & lavender blend', category: 'Wellness', price: 199, mrp: 249, image: '/herbal tea.jpeg' }
 ];
 
 
