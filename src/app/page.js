@@ -483,7 +483,9 @@ export default function Home() {
   useEffect(() => {
     if (messages.length > 0 && currentChatId) {
       const title = messages[0]?.content?.slice(0, 30) || 'New Chat';
-      saveChat(currentChatId, title, messages);
+      // Strip navigating flag so "Redirecting..." doesn't persist in history
+      const cleanMessages = messages.map(({ navigating, ...rest }) => rest);
+      saveChat(currentChatId, title, cleanMessages);
     }
   }, [messages, currentChatId]);
 
