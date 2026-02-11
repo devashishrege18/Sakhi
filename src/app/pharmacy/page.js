@@ -18,14 +18,14 @@ const TRANSLATIONS = {
 const CATEGORIES = ['All', 'Menstrual', 'Vitamins', 'Skincare', 'Wellness'];
 
 const PRODUCTS = [
-  { id: 1, name: 'Organic Cotton Pads', desc: 'Biodegradable pack of 30', category: 'Menstrual', price: 149, mrp: 199, image: '/organic_cotton_pads.png' },
-  { id: 2, name: 'Iron + Folic Acid', desc: 'Monthly supply', category: 'Vitamins', price: 299, mrp: 399, image: '/iron_folic_acid.png' },
-  { id: 3, name: 'Menstrual Cup', desc: 'Medical grade silicone', category: 'Menstrual', price: 399, mrp: 599, image: '/menstrual_cup.png' },
-  { id: 4, name: 'Calcium + D3', desc: 'Bone health support', category: 'Vitamins', price: 249, mrp: 349, image: '/calcium_d3.png' },
-  { id: 5, name: 'Biotin Gummies', desc: 'For hair & nails', category: 'Skincare', price: 449, mrp: 599, image: '/biotin_gummies.png' },
-  { id: 6, name: 'Period Pain Roll-on', desc: 'Ayurvedic formula', category: 'Menstrual', price: 129, mrp: 179, image: '/period_pain_rollon.png' },
-  { id: 7, name: 'Women Multivitamin', desc: 'Complete daily nutrition', category: 'Vitamins', price: 349, mrp: 499, image: '/women_multivitamin.png' },
-  { id: 8, name: 'Stress Relief Tea', desc: 'Chamomile & lavender', category: 'Wellness', price: 199, mrp: 249, image: '/stress_relief_tea.png' }
+  { id: 1, name: 'Whisper Choice Ultra XL', desc: '6 Pads, 100% stain protection', category: 'Menstrual', price: 40, mrp: 55, image: '/whisper ultrachoice.jpeg' },
+  { id: 2, name: 'Fecarbo-FZ Iron Capsules', desc: 'Iron, Folic Acid, B12 & Vitamin C', category: 'Vitamins', price: 185, mrp: 250, image: '/irn tablets.jpg.jpeg' },
+  { id: 3, name: 'iCare Menstrual Cup', desc: 'Medical grade silicone, Size S', category: 'Menstrual', price: 399, mrp: 599, image: '/menstrual cup.jpeg' },
+  { id: 4, name: 'Calizon-D Tablets', desc: 'Calcium Carbonate + Vitamin D3', category: 'Vitamins', price: 220, mrp: 310, image: '/calcium D3.jpg.jpeg' },
+  { id: 5, name: 'NaturesPlus Biotin Gummies', desc: '5000 mcg, 60 Raspberry Gummies', category: 'Skincare', price: 449, mrp: 599, image: '/gummies.jpg.jpeg' },
+  { id: 6, name: 'Comfy Period Pain Roll-On', desc: '100% Ayurvedic, 50ml', category: 'Menstrual', price: 125, mrp: 175, image: '/rollon.jpg.jpeg' },
+  { id: 7, name: 'Naturelo Women Multivitamin', desc: '120 Vegetarian Capsules', category: 'Vitamins', price: 349, mrp: 499, image: '/muulti vitamin.jpg.jpeg' },
+  { id: 8, name: 'Stress Relief Herbal Tea', desc: 'Chamomile & lavender blend', category: 'Wellness', price: 199, mrp: 249, image: '/WhatsApp Image 2026-02-12 at 01.46.15.jpeg' }
 ];
 
 
