@@ -132,7 +132,7 @@ EXAMPLES:
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "openai/gpt-oss-120b",
+        model: "groq/compound",
         messages: [
           { role: "system", content: systemPrompt },
           ...conversationHistory,
