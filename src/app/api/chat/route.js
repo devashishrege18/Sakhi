@@ -1,4 +1,4 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
@@ -53,14 +53,14 @@ IMPORTANT: Do NOT use "Hinglish" or Latin characters for Indian languages. Use t
 
 NAME PRONUNCIATION (CRITICAL):
 When referring to yourself, ALWAYS write your name in the native script of the response language:
-- Hindi/Marathi: सखी
-- Bengali: সখী
-- Tamil: சகி
-- Telugu: సఖి
-- Gujarati: સખી
-- Kannada: ಸಖಿ
-- Malayalam: സഖി
-- Punjabi: ਸਖੀ
+- Hindi/Marathi: ???
+- Bengali: ???
+- Tamil: ???
+- Telugu: ???
+- Gujarati: ???
+- Kannada: ???
+- Malayalam: ???
+- Punjabi: ???
 - English: Sakhi (only for English responses)
 NEVER write "Sakhi" in Roman letters when responding in Indian languages.
 
@@ -97,14 +97,14 @@ Decoding Examples:
 "Pate duke raha high" -> "Pet dukh raha hai" (Hindi: Stomach ache)
 "Molly yum" -> "Malayalam"
 "Kem cho" -> "Kem cho" (Gujarati: How are you)
-"Mala dokat dukhat ahe" -> "मळा डोक्यात दुखत आहे" (Marathi: Head hurts)
+"Mala dokat dukhat ahe" -> "??? ??????? ???? ???" (Marathi: Head hurts)
 "Kemon acho" -> "Kemon acho" (Bengali: How are you)
 "Baguunnara" -> "Bagunnara" (Telugu: Are you well?)
 "Hegiddira" -> "Hegiddira" (Kannada: How are you?)
 "Ki haal hai" -> "Ki haal hai" (Punjabi: How are you?)
 
 If decoded language is non-English, respond in that Native Language.
-For MARATHI: Be very careful to distinguish from Hindi. "Ahe" (आहे), "Kaay" (काय), "Nahi" (नाही) are strong Marathi indicators.
+For MARATHI: Be very careful to distinguish from Hindi. "Ahe" (???), "Kaay" (???), "Nahi" (????) are strong Marathi indicators.
 
 RESPONSE RULES:
 1. "content" MUST be in the NATIVE SCRIPT of the DETECTED language.
@@ -114,16 +114,16 @@ RESPONSE RULES:
 
 EXAMPLES:
 [Input: "hi"]
-→ Output: { "language": "en-IN", "content": "Hey there! How can I help you today? 😊" }
+? Output: { "language": "en-IN", "content": "Hey there! How can I help you today? ??" }
 
 [Input: "kya haal hai"]
-→ Output: { "language": "hi-IN", "content": "सब बढ़िया! तुम बताओ, कैसी हो? कोई बात करनी है?" }
+? Output: { "language": "hi-IN", "content": "?? ??????! ??? ????, ???? ??? ??? ??? ???? ???" }
 
 [Input: "pet duk raha hai"]
-→ Output: { "language": "hi-IN", "content": "अरे, पेट दर्द है? कब से हो रहा है? थोड़ा गर्म पानी पियो और आराम करो। अगर ज्यादा है तो बताना, मैं पास का अस्पताल दिखा दूंगी।" }
+? Output: { "language": "hi-IN", "content": "???, ??? ???? ??? ?? ?? ?? ??? ??? ????? ???? ???? ???? ?? ???? ???? ??? ?????? ?? ?? ?????, ??? ??? ?? ??????? ???? ??????" }
 
 [Input: "enakku thalai vali"]
-→ Output: { "language": "ta-IN", "content": "ஓய்வு எடுங்கள் சகோதரி. அதிக ஸ்ட்ரெஸ் வேண்டாம். இது தொடர்ந்தால் மருத்துவரை அணுகுங்கள். அருகில் உள்ள மருத்துவமனை காட்டட்டுமா?" }`;
+? Output: { "language": "ta-IN", "content": "????? ???????? ??????. ???? ???????? ????????. ??? ??????????? ?????????? ??????????. ??????? ???? ??????????? ????????????" }`;
 
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
@@ -132,7 +132,7 @@ EXAMPLES:
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: "openai/gpt-oss-120b",
         messages: [
           { role: "system", content: systemPrompt },
           ...conversationHistory,
