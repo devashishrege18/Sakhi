@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
@@ -106,11 +106,13 @@ Decoding Examples:
 If decoded language is non-English, respond in that Native Language.
 For MARATHI: Be very careful to distinguish from Hindi. "Ahe" (???), "Kaay" (???), "Nahi" (????) are strong Marathi indicators.
 
-RESPONSE RULES:
+RESPONSE RULES (STRICT):
 1. "content" MUST be in the NATIVE SCRIPT of the DETECTED language.
-2. Vary response length: 20-100 words depending on question complexity.
-3. For greetings/small talk: Keep it SHORT and friendly (1-2 sentences).
-4. For health questions: Acknowledge, inform, offer help.
+2. KEEP "content" UNDER 80 WORDS. Responses are read aloud via TTS - be brief.
+3. For greetings/small talk: 1-2 sentences maximum.
+4. For health questions: Give the KEY point + one action tip only. No lengthy explanations.
+5. NEVER use bullet points or numbered lists inside "content" - write flowing sentences only.
+6. Accuracy matters: be correct but concise. Cut all filler phrases.
 
 EXAMPLES:
 [Input: "hi"]
@@ -139,7 +141,7 @@ EXAMPLES:
           { role: "user", content: message }
         ],
         temperature: 0.85,
-        max_tokens: 400,
+        max_tokens: 250,
         response_format: { type: "json_object" } // Force valid JSON
       }),
     });
@@ -150,7 +152,8 @@ EXAMPLES:
 
     const data = await response.json();
     const result = JSON.parse(data.choices?.[0]?.message?.content || "{}");
-    const text = result.content || "Maaf karo behan, thodi technical issue hai.";
+    const rawText = result.content || "Maaf karo behan, thodi technical issue hai.";
+    const text = rawText.length > 500 ? rawText.substring(0, 497) + "..." : rawText;
     const detectedLang = result.language || "hi-IN";
 
     return NextResponse.json({ content: text, language: detectedLang });
@@ -159,3 +162,4 @@ EXAMPLES:
     return NextResponse.json({ content: "Technical error. Please refresh." });
   }
 }
+
