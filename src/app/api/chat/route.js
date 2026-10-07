@@ -1,38 +1,37 @@
 ﻿import { NextResponse } from "next/server";
 
-// Helper: call Groq with a specific model, retries on 429
-async function callGroq(apiKey, model, messages, retries = 2) {
-  for (let attempt = 0; attempt <= retries; attempt++) {
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": "Bearer " + apiKey,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model,
-        messages,
-        temperature: 0.75,
-        max_tokens: 250,
-        response_format: { type: "json_object" }
-      }),
-    });
+// Round-robin key rotation counter (in-memory, per instance)
+let keyIndex = 0;
 
-    if (response.ok) return response;
+function getNextApiKey(env) {
+  // Collect all available keys: GROQ_API_KEY, GROQ_API_KEY_2, GROQ_API_KEY_3, ...
+  const keys = [];
+  if (env.GROQ_API_KEY)   keys.push(env.GROQ_API_KEY);
+  if (env.GROQ_API_KEY_2) keys.push(env.GROQ_API_KEY_2);
+  if (env.GROQ_API_KEY_3) keys.push(env.GROQ_API_KEY_3);
+  if (env.GROQ_API_KEY_4) keys.push(env.GROQ_API_KEY_4);
+  if (env.GROQ_API_KEY_5) keys.push(env.GROQ_API_KEY_5);
+  if (keys.length === 0) return null;
+  const key = keys[keyIndex % keys.length];
+  keyIndex = (keyIndex + 1) % keys.length;
+  return { key, total: keys.length };
+}
 
-    const status = response.status;
-    console.error(`Groq [${model}] attempt ${attempt + 1} failed: HTTP ${status}`);
-
-    // On rate limit, wait and retry
-    if (status === 429 && attempt < retries) {
-      const waitMs = (attempt + 1) * 2000; // 2s, 4s
-      await new Promise(r => setTimeout(r, waitMs));
-      continue;
-    }
-
-    // Return the failed response so caller can decide
-    return response;
-  }
+async function callGroq(apiKey, model, messages) {
+  return fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Authorization": "Bearer " + apiKey,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model,
+      messages,
+      temperature: 0.75,
+      max_tokens: 250,
+      response_format: { type: "json_object" }
+    }),
+  });
 }
 
 export async function POST(req) {
@@ -42,13 +41,13 @@ export async function POST(req) {
     const history = body.history || [];
     const language = body.language || "hi-IN";
 
-    const apiKey = process.env.GROQ_API_KEY;
-
-    if (!apiKey) {
+    const keyInfo = getNextApiKey(process.env);
+    if (!keyInfo) {
       return NextResponse.json({ content: "API key not configured." });
     }
 
-    // Keep only last 4 messages (not 6) to reduce token usage and rate limit pressure
+    const { key: apiKey, total: totalKeys } = keyInfo;
+
     const conversationHistory = history.slice(-4).map(msg => ({
       role: (msg.type === "user" || msg.role === "user") ? "user" : "assistant",
       content: msg.text || msg.content || ""
@@ -163,25 +162,42 @@ EXAMPLES:
       { role: "user", content: message }
     ];
 
-    // Try primary model first, then fall back to lighter model on rate limit
-    const primaryModel = "groq/compound";
-    const fallbackModel = "openai/gpt-oss-20b";
+    // Try all available keys with both models before giving up
+    const allKeys = [];
+    if (process.env.GROQ_API_KEY)   allKeys.push(process.env.GROQ_API_KEY);
+    if (process.env.GROQ_API_KEY_2) allKeys.push(process.env.GROQ_API_KEY_2);
+    if (process.env.GROQ_API_KEY_3) allKeys.push(process.env.GROQ_API_KEY_3);
+    if (process.env.GROQ_API_KEY_4) allKeys.push(process.env.GROQ_API_KEY_4);
+    if (process.env.GROQ_API_KEY_5) allKeys.push(process.env.GROQ_API_KEY_5);
 
-    let response = await callGroq(apiKey, primaryModel, messages, 1);
+    // Models in priority order
+    const models = ["groq/compound-mini", "groq/compound", "openai/gpt-oss-20b"];
 
-    // If still rate limited, try the faster fallback model immediately
-    if (response && response.status === 429) {
-      console.warn("Primary model rate limited, trying fallback model...");
-      response = await callGroq(apiKey, fallbackModel, messages, 1);
+    let finalResponse = null;
+
+    // Outer loop: try each key with the rotated starting key
+    for (let ki = 0; ki < allKeys.length; ki++) {
+      const k = allKeys[(keyIndex + ki) % allKeys.length];
+      // Inner loop: try each model
+      for (const model of models) {
+        const resp = await callGroq(k, model, messages);
+        if (resp.ok) {
+          finalResponse = resp;
+          // Advance key index for next request
+          keyIndex = (keyIndex + 1) % allKeys.length;
+          break;
+        }
+        if (resp.status !== 429) break; // non-rate-limit error, skip to next key
+        console.warn(`Key ...${k.slice(-6)} / model ${model} -> 429, trying next`);
+      }
+      if (finalResponse) break;
     }
 
-    if (!response || !response.ok) {
-      const errStatus = response ? response.status : "no response";
-      console.error("All Groq attempts failed. Status:", errStatus);
+    if (!finalResponse) {
       return NextResponse.json({ content: "Abhi thodi busy hoon, ek minute baad try karo! 🙏" });
     }
 
-    const data = await response.json();
+    const data = await finalResponse.json();
     const result = JSON.parse(data.choices?.[0]?.message?.content || "{}");
     const rawText = result.content || "Maaf karo behan, thodi technical issue hai.";
     const text = rawText.length > 500 ? rawText.substring(0, 497) + "..." : rawText;
