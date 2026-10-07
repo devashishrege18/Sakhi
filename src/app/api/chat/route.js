@@ -1,11 +1,46 @@
 ﻿import { NextResponse } from "next/server";
 
+// Helper: call Groq with a specific model, retries on 429
+async function callGroq(apiKey, model, messages, retries = 2) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer " + apiKey,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model,
+        messages,
+        temperature: 0.75,
+        max_tokens: 250,
+        response_format: { type: "json_object" }
+      }),
+    });
+
+    if (response.ok) return response;
+
+    const status = response.status;
+    console.error(`Groq [${model}] attempt ${attempt + 1} failed: HTTP ${status}`);
+
+    // On rate limit, wait and retry
+    if (status === 429 && attempt < retries) {
+      const waitMs = (attempt + 1) * 2000; // 2s, 4s
+      await new Promise(r => setTimeout(r, waitMs));
+      continue;
+    }
+
+    // Return the failed response so caller can decide
+    return response;
+  }
+}
+
 export async function POST(req) {
   try {
     const body = await req.json();
     const message = body.message || "";
     const history = body.history || [];
-    const language = body.language || "hi-IN"; // Get selected language
+    const language = body.language || "hi-IN";
 
     const apiKey = process.env.GROQ_API_KEY;
 
@@ -13,12 +48,12 @@ export async function POST(req) {
       return NextResponse.json({ content: "API key not configured." });
     }
 
-    const conversationHistory = history.slice(-6).map(msg => ({
+    // Keep only last 4 messages (not 6) to reduce token usage and rate limit pressure
+    const conversationHistory = history.slice(-4).map(msg => ({
       role: (msg.type === "user" || msg.role === "user") ? "user" : "assistant",
       content: msg.text || msg.content || ""
     }));
 
-    // Language-specific response instructions - STRICT NATIVE SCRIPT
     const languageMap = {
       'hi-IN': 'Respond in PURE HINDI (Devanagari script) by default.',
       'bn-IN': 'Respond in PURE BENGALI (Bengali script) by default.',
@@ -53,14 +88,14 @@ IMPORTANT: Do NOT use "Hinglish" or Latin characters for Indian languages. Use t
 
 NAME PRONUNCIATION (CRITICAL):
 When referring to yourself, ALWAYS write your name in the native script of the response language:
-- Hindi/Marathi: ???
-- Bengali: ???
-- Tamil: ???
-- Telugu: ???
-- Gujarati: ???
-- Kannada: ???
-- Malayalam: ???
-- Punjabi: ???
+- Hindi/Marathi: साखी
+- Bengali: সাখী
+- Tamil: சாக்கி
+- Telugu: సాఖీ
+- Gujarati: સાખી
+- Kannada: ಸಾಖಿ
+- Malayalam: സാഖി
+- Punjabi: ਸਾਖੀ
 - English: Sakhi (only for English responses)
 NEVER write "Sakhi" in Roman letters when responding in Indian languages.
 
@@ -80,13 +115,8 @@ VARIETY & NATURALNESS (VERY IMPORTANT):
 - Use different greetings: "Haan behan", "Bilkul", "Samajh gayi", "Acha", "Dekho", "Suno", etc.
 - Avoid repetitive patterns like always starting with "Behan, main samajhti hoon..."
 - Be conversational and natural, like chatting with a friend
-- Sometimes be brief (2-3 sentences), sometimes more detailed based on the question
 - Match the user's energy - if they're casual, be casual; if worried, be reassuring
 - For simple greetings like "hi" or "hello", give SHORT friendly responses (1-2 sentences max)
-- For small talk, be natural and don't always redirect to health topics
-
-FEATURE DETECTION:
-If user mentions relevant topics, include suggestion in "content".
 
 PHONETIC DECODING (Universal Listener):
 User input might be phonetic English transliterations of Native languages (e.g. from Speech-to-Text).
@@ -97,14 +127,14 @@ Decoding Examples:
 "Pate duke raha high" -> "Pet dukh raha hai" (Hindi: Stomach ache)
 "Molly yum" -> "Malayalam"
 "Kem cho" -> "Kem cho" (Gujarati: How are you)
-"Mala dokat dukhat ahe" -> "??? ??????? ???? ???" (Marathi: Head hurts)
+"Mala dokat dukhat ahe" -> "मला डोकं दुखत आहे" (Marathi: Head hurts)
 "Kemon acho" -> "Kemon acho" (Bengali: How are you)
 "Baguunnara" -> "Bagunnara" (Telugu: Are you well?)
 "Hegiddira" -> "Hegiddira" (Kannada: How are you?)
 "Ki haal hai" -> "Ki haal hai" (Punjabi: How are you?)
 
 If decoded language is non-English, respond in that Native Language.
-For MARATHI: Be very careful to distinguish from Hindi. "Ahe" (???), "Kaay" (???), "Nahi" (????) are strong Marathi indicators.
+For MARATHI: Be very careful to distinguish from Hindi. "Ahe" (आहे), "Kaay" (काय), "Nahi" (नाही) are strong Marathi indicators.
 
 RESPONSE RULES (STRICT):
 1. "content" MUST be in the NATIVE SCRIPT of the DETECTED language.
@@ -116,38 +146,39 @@ RESPONSE RULES (STRICT):
 
 EXAMPLES:
 [Input: "hi"]
-? Output: { "language": "en-IN", "content": "Hey there! How can I help you today? ??" }
+→ Output: { "language": "en-IN", "content": "Hey there! How can I help you today? 😊" }
 
 [Input: "kya haal hai"]
-? Output: { "language": "hi-IN", "content": "?? ??????! ??? ????, ???? ??? ??? ??? ???? ???" }
+→ Output: { "language": "hi-IN", "content": "बढ़िया! बोलो, आज मैं तुम्हारी कैसे मदद कर सकती हूँ?" }
 
 [Input: "pet duk raha hai"]
-? Output: { "language": "hi-IN", "content": "???, ??? ???? ??? ?? ?? ?? ??? ??? ????? ???? ???? ???? ?? ???? ???? ??? ?????? ?? ?? ?????, ??? ??? ?? ??????? ???? ??????" }
+→ Output: { "language": "hi-IN", "content": "बहन, पेट दर्द के लिए अदरक की चाय पियो और थोड़ा आराम करो। अगर दर्द ज़्यादा है या बुखार भी है, तो डॉक्टर को दिखाओ।" }
 
 [Input: "enakku thalai vali"]
-? Output: { "language": "ta-IN", "content": "????? ???????? ??????. ???? ???????? ????????. ??? ??????????? ?????????? ??????????. ??????? ???? ??????????? ????????????" }`;
+→ Output: { "language": "ta-IN", "content": "தலைவலி வருகிறதா? சிறிது நேரம் ஓய்வெடுங்கள், தண்ணீர் குடியுங்கள். தலைவலி அடிக்கடி வந்தால் மருத்துவரிடம் சென்று பாருங்கள்." }`;
 
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": "Bearer " + apiKey,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "groq/compound",
-        messages: [
-          { role: "system", content: systemPrompt },
-          ...conversationHistory,
-          { role: "user", content: message }
-        ],
-        temperature: 0.85,
-        max_tokens: 250,
-        response_format: { type: "json_object" } // Force valid JSON
-      }),
-    });
+    const messages = [
+      { role: "system", content: systemPrompt },
+      ...conversationHistory,
+      { role: "user", content: message }
+    ];
 
-    if (!response.ok) {
-      return NextResponse.json({ content: "Connection issue. Please try again." });
+    // Try primary model first, then fall back to lighter model on rate limit
+    const primaryModel = "groq/compound";
+    const fallbackModel = "openai/gpt-oss-20b";
+
+    let response = await callGroq(apiKey, primaryModel, messages, 1);
+
+    // If still rate limited, try the faster fallback model immediately
+    if (response && response.status === 429) {
+      console.warn("Primary model rate limited, trying fallback model...");
+      response = await callGroq(apiKey, fallbackModel, messages, 1);
+    }
+
+    if (!response || !response.ok) {
+      const errStatus = response ? response.status : "no response";
+      console.error("All Groq attempts failed. Status:", errStatus);
+      return NextResponse.json({ content: "Abhi thodi busy hoon, ek minute baad try karo! 🙏" });
     }
 
     const data = await response.json();
@@ -162,4 +193,3 @@ EXAMPLES:
     return NextResponse.json({ content: "Technical error. Please refresh." });
   }
 }
-
