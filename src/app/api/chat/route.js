@@ -171,7 +171,7 @@ EXAMPLES:
     if (process.env.GROQ_API_KEY_5) allKeys.push(process.env.GROQ_API_KEY_5);
 
     // Models in priority order
-    const models = ["groq/compound-mini", "groq/compound", "openai/gpt-oss-20b"];
+    const models = ["groq/compound", "openai/gpt-oss-120b", "openai/gpt-oss-20b"];
 
     let finalResponse = null;
 
@@ -187,7 +187,8 @@ EXAMPLES:
           keyIndex = (keyIndex + 1) % allKeys.length;
           break;
         }
-        if (resp.status !== 429) break; // non-rate-limit error, skip to next key
+        if (resp.status === 401 || resp.status === 403) break; // bad key, skip to next key
+        // For other errors (400, 422 = model issue), keep trying other models
         console.warn(`Key ...${k.slice(-6)} / model ${model} -> 429, trying next`);
       }
       if (finalResponse) break;
@@ -209,3 +210,4 @@ EXAMPLES:
     return NextResponse.json({ content: "Technical error. Please refresh." });
   }
 }
+
